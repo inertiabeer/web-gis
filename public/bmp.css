@@ -1,0 +1,50 @@
+body{
+	margin: 0 auto;
+	text-shadow: 0 -.05em .05em rgba(0,0,0,.5);
+}
+.bmp
+{
+	display: block;
+	width: 80%;
+	margin: 0 auto;
+	text-align: center;
+}
+.bmp>div
+{
+
+	width: 6em;
+	padding: .3em .8em;
+	margin: 40px calc(50% - 3em) ;
+	border: 1px solid rgba(0,0,0,.1);
+	background: #58a linear(hsla(0,0%,100%,.2),transparent);
+	border-radius: .2em;
+	box-shadow: 0 .05em .25em rgba(0,0,0,.5);
+	color: #000;
+	text-shadow: 0 -.05em .05em rgba(0,0,0,.5);
+}
+.bmp>div:hover
+{
+	color: red;
+
+}
+img
+{
+	width: 300px;
+}
+input
+{
+	display: inline-block;
+
+	padding: .3em .8em;
+	margin: 0 auto;
+	border: 1px solid rgba(0,0,0,.1);
+	background: #58a linear(hsla(0,0%,100%,.2),transparent);
+	border-radius: .2em;
+	box-shadow: 0 .05em .25em rgba(0,0,0,.5);
+	color: #000;
+	text-shadow: 0 -.05em .05em rgba(0,0,0,.5);
+}
+input:hover
+{
+	color: red;
+}

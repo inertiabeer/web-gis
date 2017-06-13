@@ -1,0 +1,35 @@
+doctype html
+html(lang='en')
+  head
+    meta(charset='UTF-8')
+    title bmp文件转换
+    link(rel='stylesheet', href='/public/bmp.css')
+  body
+    form.bmp(action='http://localhost:3000/bmp', method='POST', enctype='multipart/form-data')
+      | 上传文件：
+      input(type='file', name='bmp', accept='image/bmp')
+      div(onclick='send()') 点击提交
+    script.
+      function send(){
+      var form=document.querySelector('form');
+      var request=new XMLHttpRequest();
+      request.open("POST","http://localhost:3000/bmp",true);
+      request.onreadystatechange=function()
+      {
+      if(request.readyState==4&&request.status==200)
+      {
+      console.log(request.responseText)
+      var obj=JSON.parse(request.responseText);
+      var img1=document.createElement('img');
+      img1.setAttribute('src',"http://localhost:3000/"+obj.raw);
+      var img2=document.createElement('img');
+      img2.setAttribute('src',"http://localhost:3000/"+obj.reverse);
+      var img3=document.createElement('img');
+      img3.setAttribute('src',"http://localhost:3000/"+obj.smooth);
+      document.body.appendChild(img1);
+      document.body.appendChild(img2);
+      document.body.appendChild(img3);
+      }
+      };
+      request.send(new FormData(form));
+      }

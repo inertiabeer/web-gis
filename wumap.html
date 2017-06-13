@@ -1,0 +1,167 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset= UTF-8" />
+    <meta name="keywords" content="百度地图,百度地图API，百度地图自定义工具，百度地图所见即所得工具" />
+    <meta name="description" content="百度地图API自定义地图，帮助用户在可视化操作下生成百度地图" />
+    <title>WUMAP Wuhan University</title>
+    <!--引用百度地图API-->
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=lvPIXnzDGcN5f1Egx8TrNrY9BR6VAlHh"></script>
+    <script type="text/javascript" src="http://api.map.baidu.com/library/AreaRestriction/1.2/src/AreaRestriction_min.js"></script>
+  </head>
+  
+  <body>
+    <!--百度地图容器-->
+    <div style="width:100%;height:100%;position:absolute;border:#ccc solid 1px;font-size:12px" id="map"></div>
+    <p style="color:red;font-weight:600">
+      <a href="http://developer.baidu.com/map/index.php?title=jspopular/guide/introduction" style="color:#2f83c7" target="_blank">
+      <a href="http://lbsyun.baidu.com/apiconsole/key?application=key" style="color:#2f83c7" target="_blank">
+    </p>
+  </body>
+  <script type="text/javascript">
+    //创建和初始化地图函数：
+    function initMap(){
+      createMap();//创建地图
+      setMapEvent();//设置地图事件
+      addMapControl();//向地图添加控件
+      addMapOverlay();//向地图添加覆盖物
+    }
+    function createMap(){ 
+      map = new BMap.Map("map"); 
+      map.centerAndZoom(new BMap.Point(114.368107,30.543083),16);
+      map.enableScrollWheelZoom();
+      var b = new BMap.Bounds(new BMap.Point(114.357788,30.531021),new BMap.Point(114.386678,30.551922));
+      try {  BMapLib.AreaRestriction.setBounds(map, b);} 
+      catch (e) {  alert(e);}
+    }
+    function setMapEvent(){
+      map.enableScrollWheelZoom();
+      map.enableKeyboard();
+      map.enableDragging();
+      map.enableDoubleClickZoom()
+    }
+    function addClickHandler(target,window){
+      target.addEventListener("click",function(){
+        target.openInfoWindow(window);
+      });
+    }
+    function addMapOverlay(){
+      var markers = [
+          {content:"桂圆操场主席台附近，Q4污染心情指数：☆☆☆☆",title:"R1",imageOffset: {width:-69,height:-21},position:{lat:30.544431,lng:114.367562}},
+         {content:"桂园食堂附近，污染心情指数：☆☆",title:"R2",imageOffset: {width:-23,height:-21},position:{lat:30.54513,lng:114.366003}},
+         {content:"桂园小食附近，污染心情指数：☆☆",title:"R3",imageOffset: {width:-23,height:-21},position:{lat:30.545119,lng:114.365545}},
+         {content:"桂园餐厅附近，污染心情指数：☆☆",title:"R4",imageOffset: {width:-23,height:-21},position:{lat:30.544726,lng:114.365087}},
+         {content:"宋卿体育馆车棚，污染心情指数：☆☆☆",title:"R5",imageOffset: {width:-69,height:-21},position:{lat:30.544827,lng:114.368658}},
+         {content:"梅操篮球场，污染心情指数：☆☆",title:"R6",imageOffset: {width:-23,height:-21},position:{lat:30.544275,lng:114.370194}},
+         {content:"梅园小操场西门，污染心情指数：☆☆",title:"R7",imageOffset: {width:-23,height:-21},position:{lat:30.545142,lng:114.370854}},
+         {content:"梅园小操场内部，污染心情指数：☆☆☆",title:"R8",imageOffset: {width:-69,height:-21},position:{lat:30.544423,lng:114.371887}},
+         {content:"梅园宿舍区，污染心情指数：☆☆☆☆☆",title:"R9",imageOffset: {width:-46,height:-21},position:{lat:30.543097,lng:114.37213}},
+         {content:"宋卿小树林，污染心情指数：☆",title:"R10",imageOffset: {width:0,height:-21},position:{lat:30.543921,lng:114.368213}},
+         {content:"鉴湖南侧，污染心情指数：☆☆",title:"R11",imageOffset: {width:-23,height:-21},position:{lat:30.543626,lng:114.369713}},
+         {content:"珞珈山庄路口，污染心情指数：☆☆",title:"R12",imageOffset: {width:-23,height:-21},position:{lat:30.542926,lng:114.37389}},
+         {content:"校友之家附近，污染心情指数：☆☆",title:"R13",imageOffset: {width:-23,height:-21},position:{lat:30.542125,lng:114.376055}},
+         {content:"珞珈山北侧，污染心情指数：☆☆☆",title:"R14",imageOffset: {width:-69,height:-21},position:{lat:30.542001,lng:114.3769}},
+         {content:"珞珈山北侧，污染心情指数：☆☆☆☆",title:"R15",imageOffset: {width:-69,height:-21},position:{lat:30.542199,lng:114.378328}},
+         {content:"珞珈山北侧，污染心情指数：☆☆",title:"R16",imageOffset: {width:-23,height:-21},position:{lat:30.54209,lng:114.380169}},
+         {content:"珞珈山南侧，污染心情指数：☆☆☆☆☆",title:"R17",imageOffset: {width:-46,height:-21},position:{lat:30.541087,lng:114.380789}},
+         {content:"珞珈山南侧，污染心情指数：☆",title:"R18",imageOffset: {width:0,height:-21},position:{lat:30.540605,lng:114.378031}},
+         {content:"珞珈山南侧，污染心情指数：☆☆☆",title:"R19",imageOffset: {width:-69,height:-21},position:{lat:30.539882,lng:114.374303}},
+         {content:"教三附近，污染心情指数：☆☆",title:"R20",imageOffset: {width:-23,height:-21},position:{lat:30.546064,lng:114.366758}},
+         {content:"桂子路附近，污染心情指数：☆☆☆☆",title:"R21",imageOffset: {width:-69,height:-21},position:{lat:30.546569,lng:114.366767}},
+         {content:"桂子路附近，污染心情指数：☆☆☆",title:"R22",imageOffset: {width:-23,height:-21},position:{lat:30.547144,lng:114.367584}},
+         {content:"桂圆9舍后，污染心情指数：☆☆☆☆",title:"R23",imageOffset: {width:-69,height:-21},position:{lat:30.546421,lng:114.365275}},
+         {content:"教工南51栋，污染心情指数：☆☆☆☆☆",title:"R24",imageOffset: {width:-46,height:-21},position:{lat:30.546721,lng:114.365208}},
+         {content:"教工南53栋，污染心情指数：☆☆☆☆☆",title:"R25",imageOffset: {width:-46,height:-21},position:{lat:30.547187,lng:114.365186}},
+         {content:"教工南47栋，污染心情指数：☆☆☆☆",title:"R26",imageOffset: {width:-69,height:-21},position:{lat:30.54756,lng:114.366452}},
+         {content:"学生宿舍管理中心附近，污染心情指数：☆",title:"R27",imageOffset: {width:0,height:-21},position:{lat:30.549251,lng:114.366097}},
+         {content:"工学部四教附近，污染心情指数：☆",title:"R28",imageOffset: {width:0,height:-21},position:{lat:30.549547,lng:114.367247}},
+         {content:"工学部五教附近，污染心情指数：☆☆☆",title:"R29",imageOffset: {width:-23,height:-21},position:{lat:30.549741,lng:114.370108}},
+         {content:"工学部11舍附近，污染心情指数：☆☆☆☆",title:"R30",imageOffset: {width:-69,height:-21},position:{lat:30.550604,lng:114.371662}},
+         {content:"工学部体育馆附近，污染心情指数：☆☆☆☆",title:"R31",imageOffset: {width:-69,height:-21},position:{lat:30.550698,lng:114.372767}},
+         {content:"武汉大学幼儿园二分园，污染心情指数：☆☆☆☆",title:"R32",imageOffset: {width:-23,height:-21},position:{lat:30.549768,lng:114.364197}},
+         {content:"工学部西区62栋，污染心情指数：☆☆☆☆☆",title:"R33",imageOffset: {width:-46,height:-21},position:{lat:30.548482,lng:114.362854}},
+         {content:"教工新3舍附近，污染心情指数：☆☆",title:"R34",imageOffset: {width:-23,height:-21},position:{lat:30.549384,lng:114.364175}},
+         {content:"工学部菜市场，污染心情指数：☆☆☆☆☆",title:"R35",imageOffset: {width:-46,height:-21},position:{lat:30.546499,lng:114.36289}},
+         {content:"计算机学院附近，污染心情指数：☆",title:"R36",imageOffset: {width:0,height:-21},position:{lat:30.545601,lng:114.364395}},
+         {content:"月湖西北侧，污染心情指数：☆☆☆☆",title:"R37",imageOffset: {width:-69,height:-21},position:{lat:30.547078,lng:114.377757}},
+         {content:"湖滨食堂附近，污染心情指数：☆☆☆☆☆",title:"R38",imageOffset: {width:-46,height:-21},position:{lat:30.548019,lng:114.376787}},
+         {content:"湖滨7舍，污染心情指数：☆☆☆☆☆",title:"R39",imageOffset: {width:-46,height:-21},position:{lat:30.548637,lng:114.377016}},
+         {content:"凌波门附近，污染心情指数：☆☆☆☆",title:"R40",imageOffset: {width:-69,height:-21},position:{lat:30.549387,lng:114.376985}},
+         {content:"湖滨8舍近东湖，污染心情指数：☆☆☆",title:"R41",imageOffset: {width:-23,height:-21},position:{lat:30.549527,lng:114.37756}},
+         {content:"湖滨9舍南侧，污染心情指数：☆☆",title:"R42",imageOffset: {width:-23,height:-21},position:{lat:30.549061,lng:114.376271}},
+         {content:"湖滨13舍附近，污染心情指数：☆☆☆☆☆",title:"R43",imageOffset: {width:-46,height:-21},position:{lat:30.549629,lng:114.375687}},
+         {content:"湖滨CBD，污染心情指数：☆☆☆☆☆",title:"R44",imageOffset: {width:-46,height:-21},position:{lat:30.548248,lng:114.375826}},
+         {content:"湖滨食堂后，污染心情指数：☆☆☆☆☆",title:"R45",imageOffset: {width:-46,height:-21},position:{lat:30.548062,lng:114.375947}},
+         {content:"侧船山路口，污染心情指数：☆☆☆☆",title:"R46",imageOffset: {width:-69,height:-21},position:{lat:30.547712,lng:114.377048}},
+         {content:"电离层实验室，污染心情指数：☆☆☆",title:"R47",imageOffset: {width:-23,height:-21},position:{lat:30.547856,lng:114.37791}},
+         {content:"月湖北侧，污染心情指数：☆☆☆☆☆",title:"R48",imageOffset: {width:-46,height:-21},position:{lat:30.547257,lng:114.379091}},
+         {content:"湖滨风味食堂，污染心情指数：☆☆☆☆",title:"R49",imageOffset: {width:-69,height:-21},position:{lat:30.547257,lng:114.379091}},
+         {content:"蝶宫附近，污染心情指数：☆☆☆",title:"R50",imageOffset: {width:-23,height:-21},position:{lat:30.548447,lng:114.375305}},
+         {content:"工学部操场附近，污染心情指数：☆☆☆☆☆",title:"R51",imageOffset: {width:-46,height:-21},position:{lat:30.548054,lng:114.374267}},
+         {content:"星湖园食堂附近，污染心情指数：☆☆☆",title:"R52",imageOffset: {width:-23,height:-21},position:{lat:30.537926,lng:114.366353}},
+         {content:"信部教工区，污染心情指数：☆☆☆",title:"R53",imageOffset: {width:-23,height:-21},position:{lat:30.537009,lng:114.367234}},
+         {content:"武汉大学幼儿园，污染心情指数：☆☆",title:"R54",imageOffset: {width:-23,height:-21},position:{lat:30.536293,lng:114.369228}},
+         {content:"天文台附近，污染心情指数：☆☆",title:"R55",imageOffset: {width:-23,height:-21},position:{lat:30.535018,lng:114.368689}},
+         {content:"信部14舍附近，污染心情指数：☆☆☆☆",title:"R56",imageOffset: {width:-69,height:-21},position:{lat:30.535111,lng:114.364359}},
+         {content:"信部12舍附近，污染心情指数：☆☆☆☆☆",title:"R57",imageOffset: {width:-46,height:-21},position:{lat:30.534411,lng:114.364341}},
+         {content:"留学生宿舍附近，污染心情指数：☆☆",title:"R58",imageOffset: {width:-23,height:-21},position:{lat:30.533976,lng:114.364251}},
+         {content:"信部操场，污染心情指数：☆☆☆☆",title:"R59",imageOffset: {width:-69,height:-21},position:{lat:30.534022,lng:114.367324}},
+         {content:"信部体育馆附近，污染心情指数：☆☆",title:"R60",imageOffset: {width:-23,height:-21},position:{lat:30.533836,lng:114.368384}}];
+
+      for(var index = 0; index < markers.length; index++ ){
+        var point = new BMap.Point(markers[index].position.lng,markers[index].position.lat);
+        var marker = new BMap.Marker(point,{icon:new BMap.Icon("http://api.map.baidu.com/lbsapi/createmap/images/icon.png",new BMap.Size(20,25),{
+          imageOffset: new BMap.Size(markers[index].imageOffset.width,markers[index].imageOffset.height)
+        })});
+        var label = new BMap.Label(markers[index].title,{offset: new BMap.Size(25,5)});
+        var opts = {
+          width: 200,
+          title: markers[index].title,
+          enableMessage: false
+        };
+        var infoWindow = new BMap.InfoWindow(markers[index].content,opts);
+        marker.setLabel(label);
+        addClickHandler(marker,infoWindow);
+        map.addOverlay(marker);
+
+      };
+      var arr=map.getOverlays();
+      
+      var markers=[];
+      for(var i=0;i<arr.length;i++){
+       if (map.getOverlays()[i].GO == "Marker")
+       	markers.push(arr[i]);
+       
+   };
+   var sContent =
+  "<h4 style='margin:0 0 5px 0;padding:0.2em 0'>天安门</h4>" + 
+  "<img style='float:right;margin:4px' id='imgDemo' src='img2/R1.JPG' width='139' height='104' title='天安门'/>" + 
+  "<p style='margin:0;line-height:1.5;font-size:13px;text-indent:2em'>天安门坐落在中国北京市中心,故宫的南侧,与天安门广场隔长安街相望,是清朝皇城的大门...</p>" + 
+  "</div>";
+  // var map = new BMap.Map("allmap");
+  // var point = new BMap.Point(116.404, 39.915);
+  // var marker = new BMap.Marker(point);
+  var infoWindow = new BMap.InfoWindow(sContent);  // 创建信息窗口对象
+  // map.centerAndZoom(point, 15);
+  // map.addOverlay(marker);
+ map.getOverlays()[0].addEventListener("click", function(){          
+     this.openInfoWindow(infoWindow);
+     //图片加载完毕重绘infowindow
+
+  });
+
+    }
+    //向地图添加控件
+    function addMapControl(){
+      var scaleControl = new BMap.ScaleControl({anchor:BMAP_ANCHOR_BOTTOM_LEFT});
+      scaleControl.setUnit(BMAP_UNIT_IMPERIAL);
+      map.addControl(scaleControl);
+      var navControl = new BMap.NavigationControl({anchor:BMAP_ANCHOR_TOP_LEFT,type:BMAP_NAVIGATION_CONTROL_LARGE});
+      map.addControl(navControl);
+      // var overviewControl = new BMap.OverviewMapControl({anchor:BMAP_ANCHOR_BOTTOM_RIGHT,isOpen:true});
+      // map.addControl(overviewControl);
+    }
+    var map;
+      initMap();
+  </script>
+</html>

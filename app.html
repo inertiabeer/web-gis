@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+    <title>我的地图</title>
+    <link rel="stylesheet" href="http://cache.amap.com/lbs/static/main.css?v=1.0">
+    <link rel="stylesheet" href="public/overlay.css">
+    <script type="text/javascript" src="http://webapi.amap.com/maps?v=1.3&amp;key=5d9fea2e4e8ead5fbafedee0eab841e4&amp;plugin=AMap.Walking"></script>
+    <script type="text/javascript" src="http://cache.amap.com/lbs/static/addToolbar.js"></script>
+    <script type="text/javascript" src="http://webapi.amap.com/ui/1.0/main.js"></script>
+    <script type="text/javascript" src="https://cdn.bootcss.com/echarts/3.5.4/echarts.common.js"></script>
+  </head>
+  <body>
+    <div id="mapContainer"></div>
+    <div id="overlay"></div>
+    <div id="input"></div>
+    <div id="option">
+      <button onclick="upload()">上传</button>
+      <button onclick="selector()">查询</button>
+      <button onclick="dis_chart()">分析</button>
+    </div>
+    <form id="uploadForm" action="http://localhost:3000/upload" method="post" enctype="multipart/form-data">
+      <p>城市名称 ：
+        <input type="text" name="schoolname">
+      </p>
+      <p>上传图片：
+        <input type="file" name="img" accept="image/png,image/gif,image/jpeg">
+      </p>
+      <p>拼音：
+      <input type="text" name="pinyin">
+
+ 
+      </p>
+      <p>城市简介：
+        <input type="text" name="describe">
+      </p>
+      <p>所在位置：
+        <input type="text" name="latlog" id="latlog">
+      </p>
+      <p>
+        <input type="submit" value="上传" id="submit">
+      </p>
+      <div id="cancel" onclick="cancel(event)">取消</div>
+    </form>
+    <div id="selector">
+      <p>输入查找城市名称
+        <input type="text" id="schoolname">
+      </p>
+      <button onclick="getschool()" class="button">查询 </button>
+      <button onclick="cancel(event)" class="button">取消</button>
+    </div>
+    <div id="warper">
+      <div id="chart"></div>
+      <button onclick="cancel(event)" class="button">取消</button>
+    </div>
+    <script src="marker.js"></script>
+  </body>
+  <script src="http://webapi.amap.com/demos/js/liteToolbar.js"></script>
+</html>

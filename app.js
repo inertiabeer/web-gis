@@ -196,7 +196,24 @@ app.post('/delete',function(req,res)
 		res.send("hello");
 	})
 })
-
+app.post('/delbar',function(req,res){
+	let pointarr=[];
+	pool.query('SELECT *,(ST_AsGeoJSON(geom)) FROM res2_4m',function(err,result){
+		if(err)
+		{
+			console.log(err);
+		}
+		console.log(result.rows);
+		result.rows.forEach(function(item,index){
+			let point={
+				id:item.res2_4m_,
+				name:item.name
+			}
+			pointarr.push(point);
+		})
+		res.send(JSON.stringify(pointarr));
+	});
+})
 
 
 // catch 404 and forward to error handler
@@ -217,4 +234,4 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
-server.listen(3000);
+server.listen(4000);

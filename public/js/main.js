@@ -141,7 +141,9 @@
             xmlhttp3.send("queryPoint=" + queryPoint);
       }
       };
-
+      document.getElementById('map').onmousemove=function(){
+        document.getElementById('point').value=map.getView().getCenter();
+      }
 
 
 

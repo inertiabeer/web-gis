@@ -18,13 +18,23 @@ a {
 	margin-right: 3em;
 	background-color: #ccc;
 	min-width: 160px;
+  height: 600px;
 }
 #map
 {
-	width: 80%;
+	width: 60%;
 	float: left;
-	height: 60%;
+	height: 600px;
 	min-width: 430px;
+}
+#delbar
+{
+  width: calc(20% - 3em );
+  float: left;
+  height: 600px;
+  margin-left:3em; 
+  background-color: #ccc;
+  overflow: scroll;
 }
       .ol-popup {
         position: absolute;

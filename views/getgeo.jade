@@ -1,7 +1,7 @@
 doctype html
 html
   head
-    title MY MAP
+    title Draw and Modify Features
     meta(charset='UTF-8')
     link(rel='stylesheet', href='https://openlayers.org/en/v4.1.1/css/ol.css', type='text/css')
     // The line below is only needed for old environments like Internet Explorer and Android 4.x
@@ -42,9 +42,17 @@ html
           input#query(type='text', placeholder='请输入查询城市')
         button.btn.btn-primary(onclick='m_query()') 查询
     #map.map
+    #delbar.delbar
+      table#table.table.table-hover
+        tr
+          th ID
+          th 名称
+          th 操作
+        tbody
     #popup.ol-popup
       a#popup-closer.ol-popup-closer(href='#')
       #popup-content
     script(src='https://cdn.bootcss.com/jquery/3.2.1/jquery.js')
     script(src='https://cdn.bootcss.com/bootstrap/3.3.5/js/bootstrap.js')
     script(src='js/main.js')
+    script(src='js/delbar.js')

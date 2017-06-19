@@ -10,45 +10,57 @@ html
     link(rel='stylesheet', href='stylesheets/style.css')
     link(href='https://cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.css', rel='stylesheet')
   body
-    #sidebar
-      div
-        .form-group
-          label(for='name') 城市名称: 
-          input#name(type='text', placeholder='请输入城市名称')
-        .form-group
-          label(for='point') 城市坐标: 
-          input#point(type='text')
-        button#upload.btn.btn-primary 上传
-      //
-        <form class="form-inline"></form>
-        城市名称：
-        <input id="name" type="text">
-        城市坐标：
-        <input id="point" type="text">
-        <button id="upload" class="btn btn-primary">上传</button>
-      div
-        .form-group
-          label(for='delete') 城市名称: 
-          input#delete(type='text', placeholder='请输入删除城市')
-        button.btn.btn-primary(onclick='m_delete()') 删除
-      //
-        <label for="">输入你要删除的城市姓名
-        <input id="delete" type="text">
-        </label>
-        <button onclick="m_delete()" class="btn btn-primary">删除</button>
-      div
-        .form-group
-          label(for='query') 城市名称: 
-          input#query(type='text', placeholder='请输入查询城市')
-        button.btn.btn-primary(onclick='m_query()') 查询
-    #map.map
-    #delbar.delbar
-      table#table.table.table-hover
-        tr
-          th ID
-          th 名称
-          th 操作
-        tbody
+    .main
+      #sidebar
+        div
+          .form-group
+            label(for='name') 城市名称: 
+            input#name(type='text', placeholder='请输入城市名称')
+          .form-group
+            label(for='point') 城市坐标: 
+            input#point(type='text')
+          button#upload.btn.btn-primary 上传
+        //
+          <form class="form-inline"></form>
+          城市名称：
+          <input id="name" type="text">
+          城市坐标：
+          <input id="point" type="text">
+          <button id="upload" class="btn btn-primary">上传</button>
+        div
+          .form-group
+            label(for='delete') 城市名称: 
+            input#delete(type='text', placeholder='请输入删除城市')
+          button.btn.btn-primary(onclick='m_delete()') 删除
+        //
+          <label for="">输入你要删除的城市姓名
+          <input id="delete" type="text">
+          </label>
+          <button onclick="m_delete()" class="btn btn-primary">删除</button>
+        div
+          .form-group
+            label(for='query') 城市名称: 
+            input#query(type='text', placeholder='请输入查询城市')
+          button.btn.btn-primary(onclick='m_query()') 查询
+      #map.map
+      #delbar.delbar
+        table#table.table.table-hover
+          tr
+            th ID
+            th 名称
+            th 操作
+          tbody
+    //
+      <div class="stage">
+      <div class="container">
+      <img src="img/1.jpg" alt="">
+      <img src="img/2.jpg" alt="">
+      <img src="img/3.jpg" alt="">
+      <img src="img/4.jpg" alt="">
+      <img src="img/5.jpg" alt="">
+      <img src="img/6.jpg" alt="">
+      </div>
+      </div>
     #popup.ol-popup
       a#popup-closer.ol-popup-closer(href='#')
       #popup-content

@@ -11,7 +11,8 @@
     <link href="https://cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.css" rel="stylesheet">
   </head>
   <body>
-    
+
+    <div class="main">
     <div id="sidebar">
     <div >
       <div class="form-group">
@@ -24,14 +25,7 @@
       </div>
       <button id="upload" class="btn btn-primary">上传</button>
     </div>
-    <!--
-    <form class="form-inline"></form>
-    城市名称：
-    <input id="name" type="text">
-    城市坐标：
-    <input id="point" type="text">
-    <button id="upload" class="btn btn-primary">上传</button>
-    -->
+
     <div >
       <div class="form-group">
         <label for="delete">城市名称: </label>
@@ -39,10 +33,7 @@
       </div>
       <button onclick="m_delete()" class="btn btn-primary">删除</button>
     </div>
-<!--     <label for="">输入你要删除的城市姓名
-      <input id="delete" type="text">
-    </label>
-    <button onclick="m_delete()" class="btn btn-primary">删除</button> -->
+
     <div>
     <div class="form-group">
     <label for="query">城市名称: </label>
@@ -60,6 +51,17 @@
         </tbody>
       </table>
     </div>
+    </div>
+<!--     <div class="stage">
+    <div class="container">
+      <img src="img/1.jpg" alt="">
+      <img src="img/2.jpg" alt="">
+      <img src="img/3.jpg" alt="">
+      <img src="img/4.jpg" alt="">
+      <img src="img/5.jpg" alt="">
+      <img src="img/6.jpg" alt="">
+    </div>
+  </div> -->
       <div id="popup" class="ol-popup">
       <a href="#" id="popup-closer" class="ol-popup-closer"></a>
       <div id="popup-content"></div>

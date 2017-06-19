@@ -29,7 +29,7 @@ a {
 }
 #delbar
 {
-  width: calc(20% - 3em );
+  width: calc(20% - 3em);
   float: left;
   height: 600px;
   margin-left:3em; 
@@ -78,3 +78,4 @@ a {
       .ol-popup-closer:after {
         content: "✖";
       }
+

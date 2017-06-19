@@ -43,16 +43,23 @@
         var feature = map.forEachFeatureAtPixel(pixel, function (feature) {
                 return feature;
             });//判断当前单击处是否有要素，捕获到要素时弹出popup
+                var hdms = ol.coordinate.toStringHDMS(coordinate);
         if (feature !== undefined) 
         {
             console.log(feature);
-        }
-        var hdms = ol.coordinate.toStringHDMS(
-            coordinate);
-
-
-        content.innerHTML = '<div style="background-color: white"><p>You clicked here:</p><code>' + hdms +
+            content.innerHTML = '<div style="background-color: white"><p>You clicked here:</p><code>' + hdms +
             '</code><p>城市名称：'+feature.O.name+'  ID:'+feature.O.res2_4m_+'</p></div>';
+
+        }
+        else
+        {content.innerHTML = '<div style="background-color: white"><p>You clicked here:</p><code>' + hdms +
+            '</code></div>';
+
+        }
+
+
+
+
         overlay.setPosition(coordinate);
       });
 
@@ -70,6 +77,7 @@
                   if (data.name == '') {
                         alert('不能为空，请重新输入')
                   }
+                  else{
                   data.point = {
                         type: 'Point',
                         coordinates: moka
@@ -84,6 +92,7 @@
                   xmlhttp.setRequestHeader("Content-type", "application/json");
                   xmlhttp.send(JSON.stringify(data));
             }
+            }
 
       function m_delete() { //删除函数
             console.log('hello');
@@ -92,6 +101,7 @@
             if (del_point == '') {
                   alert('不能为空，请重新输入')
             }
+            else{
             console.log(del_point);
             xmlhttp2.onreadystatechange = function() {
                   if (xmlhttp2.readyState == 4 && xmlhttp2.status == 200) {
@@ -104,6 +114,7 @@
             xmlhttp2.open('POST', '/delete', true);
             xmlhttp2.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
             xmlhttp2.send("deletePoint=" + del_point);
+      }
       };
 
       function m_query() { //查询函数
@@ -112,6 +123,8 @@
             if (queryPoint == '') {
                   alert('不能为空，请重新输入')
             }
+            else
+            {
             xmlhttp3.onreadystatechange = function() {
                   if (xmlhttp3.readyState == 4 && xmlhttp3.status == 200) {
                         var data = xmlhttp3.responseText;
@@ -126,6 +139,7 @@
             xmlhttp3.open('POST', '/query', true);
             xmlhttp3.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
             xmlhttp3.send("queryPoint=" + queryPoint);
+      }
       };
 
 

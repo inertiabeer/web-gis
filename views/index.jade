@@ -1,51 +1,5 @@
-doctype html
-html
-  head
-    meta(charset='utf-8')
-    meta(http-equiv='X-UA-Compatible', content='IE=edge')
-    meta(name='viewport', content='initial-scale=1.0, user-scalable=no, width=device-width')
-    title 我的地图
-    link(rel='stylesheet', href='http://cache.amap.com/lbs/static/main.css?v=1.0')
-    link(rel='stylesheet', href='public/overlay.css')
-    script(type='text/javascript', src='http://webapi.amap.com/maps?v=1.3&key=5d9fea2e4e8ead5fbafedee0eab841e4&plugin=AMap.Walking')
-    script(type='text/javascript', src='http://cache.amap.com/lbs/static/addToolbar.js')
-    script(type='text/javascript', src='http://webapi.amap.com/ui/1.0/main.js')
-    script(type='text/javascript', src='https://cdn.bootcss.com/echarts/3.5.4/echarts.common.js')
-  body
-    #mapContainer
-    #overlay
-    #input
-    #option
-      button(onclick='upload()') 上传
-      button(onclick='selector()') 查询
-      button(onclick='dis_chart()') 分析
-    form#uploadForm(action='http://localhost:3000/upload', method='post', enctype='multipart/form-data')
-      p
-        | 城市名称 ：
-        input(type='text', name='cityname')
-      p
-        | 上传图片：
-        input(type='file', name='img', accept='image/png,image/gif,image/jpeg')
-      p
-        | 拼音：
-        input(type='text', name='pinyin')
-      p
-        | 城市简介：
-        input(type='text', name='describe')
-      p
-        | 所在位置：
-        input#latlog(type='text', name='latlog')
-      p
-        input#submit(type='submit', value='上传')
-      #cancel(onclick='cancel(event)') 取消
-    #selector
-      p
-        | 输入查找城市名称
-        input#schoolname(type='text')
-      button.button(onclick='getschool()') 查询 
-      button.button(onclick='cancel(event)') 取消
-    #warper
-      #chart
-      button.button(onclick='cancel(event)') 取消
-    script(src='marker.js')
-  script(src='http://webapi.amap.com/demos/js/liteToolbar.js')
+extends layout
+
+block content
+  h1= title
+  p Welcome to #{title}

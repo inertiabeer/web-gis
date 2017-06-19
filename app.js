@@ -4,27 +4,22 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-var formidable = require('formidable');
-var mongoose=require('mongoose');
-// var dbURL='mongodb://localhost:27017/map';
-// var db=mongoose.connect(dbURL);
-// var model=require('./model.js');
+var fs=require('fs');
+var pg=require('pg');
+var Pool = require('pg').Pool;
 
 var index = require('./routes/index');
 var users = require('./routes/users');
-var fs = require('fs');
 
 var app = express();
 var server = require('http').createServer(app);
-var io = require('socket.io')(server); //引入nodejs的socket模块
-io.on('connection', function(socket) {
-	console.log('连接上');
-	socket.on('client', function(content) {
-		console.log(content);
-		socket.emit('server', content);
-		socket.broadcast.emit('server', content);
-	})
-})
+var config = {
+  host: '47.94.226.150',
+  user: 'postgres',
+  password: '986619667',
+  database: 'gis',
+};//连接池的配置
+var pool = new Pool(config)//新建一个连接池
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -34,216 +29,192 @@ app.set('view engine', 'jade');
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({
-	extended: false
-}));
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(__dirname));
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(express.static(path.join(__dirname, 'img')))
+var pointsnum;
 
-app.get('/', function(req, res) {
+app.get('/', function(req,res)
+	{
+// 	client.connect(function(err){
+// 	if(err)
+// 		console.log(err);
+// 	client.query('SELECT *,(ST_AsGeoJSON(geom)) FROM res2_4m',function(err,result){
+// 		if(err)
+// 		{
+// 			console.log(err);
+// 		}
+// 		var Feas={
+// 			type:"FeatureCollection",
+// 			totalFeature:result.rows.length,
+// 			features:[]
+// 		}
+// 		result.rows.forEach(function(item,index){
+// 			let feature={
+// 				properties:{
+// 					name:item.name,
+// 					res2_4m_:item.res2_4m_,
+// 					pinyin:item.pinyin,
 
-	res.render('index');
+
+// 				},
+// 				geometry:JSON.parse(item.st_asgeojson),
+// 				type:"Feature",
+// 				id:"points."+item.res2_4m_
+
+// 			};
+// 			Feas.features.push(feature);
 
 
-});
-app.post('/data',function(req,res){
-	fs.readFile('./data/all.json','utf8',function(err,data){
+
+// 		})
+// 		fs.writeFile('./public/2.json',JSON.stringify(Feas),'utf-8',function(err,data){
+// 				if(err)
+// 					console.log(err)
+// 			})
+
+// 		client.end();
+// 	})
+// });
+       	pool.query('SELECT *,(ST_AsGeoJSON(geom)) FROM res2_4m',function(err,result){
 		if(err)
 		{
 			console.log(err);
 		}
-		var fea_c=JSON.parse(data);
-		var features=fea_c.features;
-		res.send(JSON.stringify(features));
-
-	})
-})
-app.get('/map',function(req,res){
-	res.sendFile(__dirname+'/wumap.html');
-});
-app.use('/users', users);
-app.use('/post', function(req, res) {
-	var thename = req.body.thename;
-	
-	fs.readFile('./data/all.json', 'utf8', function(err, data) {
-		if (err) {
-			console.log(err);
+		var Feas={
+			type:"FeatureCollection",
+			totalFeature:result.rows.length,
+			features:[]
 		}
-		var fea_s = JSON.parse(data);
-		var pointList=fea_s.features;
-		
-		for (var i = 0; i < pointList.length; i++) {
-			if (pointList[i].properties.name== thename) {
-				
-				res.send(JSON.stringify(pointList[i]));
-			
+		result.rows.forEach(function(item,index){
+			let feature={
+				properties:{
+					name:item.name,
+					res2_4m_:item.res2_4m_,
+					pinyin:item.pinyin,
+
+
+				},
+				geometry:JSON.parse(item.st_asgeojson),
+				type:"Feature",
+				id:"points."+item.res2_4m_
+
 			};
-		}
-		
+			Feas.features.push(feature);
 
 
 
-	});
-
-
-
-});
-app.post('/count', function(req, res) {
-	var chartarr = [0, 0, 0];
-	fs.readFile('./data/schools.json', 'utf8', function(err, data) {
-		if (err) {
-			console.log(err);
-		}
-		var schoolList = JSON.parse(data);
-		function sortName(a,b)
-		{
-			return b.schoolname - a.schoolname;
-		}
-		schoolList=schoolList.sort(sortName);
-		console.log(schoolList);
-		var schoolnames=[];
-		for (var i = 0; i < schoolList.length; i++) {
-			if(schoolnames.indexOf(schoolList[i].schoolname)>=0)
-			{
-				continue;
-
-			}
-			else
-			{
-			schoolnames.push(schoolList[i].schoolname);
-			var type = schoolList[i].schooltype;
-			if (type == 1) {
-				chartarr[0]++;
-
-			} else if (type == 2) {
-				chartarr[1]++;
-			} else if (type == 3) {
-				chartarr[2]++;
-			}
-
-			}
-
-
-
-		}
-		res.send(JSON.stringify(chartarr));
-
-
-
-	});
-})
-app.post('/upload', function(req, res) {
-
-
-	var form = new formidable.IncomingForm();
-	form.encoding = 'utf-8';
-	form.uploadDir = __dirname + "/img";
-	form.keepExtensions = true;
-
-
-	form.parse(req, function(err, fields, files) {
-		var path = JSON.parse(JSON.stringify(files.img)).path;
-		
-		
-		var props = fields;
-		props.path = path;//point.cityname, point.img,point.pinyin,point.describe,point.latlog
-
-
-		// var newdata=new model(
-		// {
-  //   schoolname:school.schoolname,
-  //   schooltype:school.schooltype,
-  //   spot:school.spot,
-  //   describe:school.describe,
-  //   latlog:school.latlog,
-  //   path:school.path
-
-		// })
-		// newdata.save(function(err, data) {
-		// 				if (err)
-		// 					console.log(err);
-		// 				else {
-		// 					console.log('success');
-
-
-		// 				}
-		// 			})
-		
-		fs.readFile('./data/all.json', 'utf8', function(err, data) {
-			if (err) {
-				console.log(err);
-			}
-			var featureC = JSON.parse(data);
-			var citylist=featureC.features;
-			var corrArr=props.latlog.split(',');
-			var point={
-			type:"Feature",
-			id:"points."+parseInt(citylist.length+1),
-			geometry:{
-				type:"Point",
-				coordinates:[parseFloat(corrArr[0]),parseFloat(corrArr[1])],
-
-			},
-			geometry_name:'geom',
-			properties:{
-				area:0,
-				perimeter:0,
-				res2_4m_:parseInt(citylist.length)+1,
-				pinyin:props.pinyin,
-				name:props.cityname,
-				img:props.path,
-				describe:props.describe
-
-
-			}
-			
-		};
-			citylist.push(point);
-			fs.writeFile('./data/all.json', JSON.stringify(featureC), 'utf-8', function(err, data) {
-				if (err) {
-					console.log(err);
-				}
-				console.log("success");
-				res.redirect('/');
+		})
+		fs.writeFile('./public/2.json',JSON.stringify(Feas),'utf-8',function(err,data){
+				if(err)
+					console.log(err)
 			})
 
-
-
-		});
-
-
-		// fs.appendFile('./data/schools.json', JSON.stringify(school), 'utf-8', function() {
-		// 	console.log("success");
-		// 	res.redirect('/');
-		// })
+       pointsnum=result.rows.length;
 
 
 
+		res.render('getgeo.jade');
 	});
+       });
 
 
+app.use('/users', users);
+app.use('/geojson',function(req,res)
+{
+	fs.readFile('./public/2.json','utf8',function(err,data){
+		if(err)
+		{
+			console.log(err);
+		}
+		res.send(data);
+		console.log('hello');
+	});
+});
+app.post('/query',function(req,res){
+	console.log(req.body.queryPoint);
+	var point=req.body.queryPoint;
+	
+
+	console.log(point);
+	fs.readFile('./public/2.json','utf8',function(err,data){
+		if(err)
+			console.log(err);
+		var m_features=JSON.parse(data);
+		var f_arr=m_features.features;
+		for(let i=0;i<f_arr.length;i++)
+		{
+			console.log(f_arr[i].properties.name);
+			if(f_arr[i].properties.name==point)
+			{
+
+				res.send(JSON.stringify(f_arr[i]));
+				console.log(f_arr[i]);
+				break;
+			}
+			console.log(i);
+
+
+		}
+		console.log('完成');
+
+	})
+});
+app.post('/upload',function(req,res)
+{
+	console.log(req.body);
+	var geoPoint=JSON.stringify(req.body.point);
+	// var uploadsql="INSERT INTO res2_4m (res2_4m_,name,geom) VALUES ("+(pointsnum+1)+","+req.body.name+","+"st_transform(st_geomfromtext(POINT "+"("+req.body.point.coordinates[0]+" "+req.body.point.coordinates[1]+")"+",900913),4326)"+")"+")";
+	var uploadsql="INSERT INTO res2_4m (res2_4m_,name,geom) VALUES ("+(pointsnum+1)+",'"+req.body.name+"',"+"st_GeomFromGeoJSON('"+geoPoint+"')"+")";
+	console.log(uploadsql);
+	pool.query(uploadsql,function(err,result){
+		if(err)
+		{
+			console.log(err);
+		}
+		res.send('hello');
+
+	
+
+
+
+		})
+
+});
+app.post('/delete',function(req,res)
+{
+	console.log(req.body);
+	var deletesql="DELETE FROM res2_4m WHERE name = '"+req.body.deletePoint+"'";
+	console.log(deletesql);
+
+	pool.query(deletesql,function(err,result){
+		if(err)
+		{
+			console.log(err);
+
+		}
+		res.send("hello");
+	})
 })
-app.get('/upload', function(req, res) {
-	res.redirect('/');
-})
 
+
+
+// catch 404 and forward to error handler
 app.use(function(req, res, next) {
-	var err = new Error('Not Found');
-	err.status = 404;
-	next(err);
+  var err = new Error('Not Found');
+  err.status = 404;
+  next(err);
 });
 
 // error handler
 app.use(function(err, req, res, next) {
-	// set locals, only providing error in development
-	res.locals.message = err.message;
-	res.locals.error = req.app.get('env') === 'development' ? err : {};
+  // set locals, only providing error in development
+  res.locals.message = err.message;
+  res.locals.error = req.app.get('env') === 'development' ? err : {};
 
-	// render the error page
-	res.status(err.status || 500);
-	res.render('error');
+  // render the error page
+  res.status(err.status || 500);
+  res.render('error');
 });
 
 server.listen(3000);

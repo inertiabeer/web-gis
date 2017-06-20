@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>用户登录</title>
+	<link href="https://cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.css" rel="stylesheet">
+	<style>
+		.container
+		{
+			text-align: center;
+			width: 500px;
+		}
+		.btn-danger
+		{
+			float: left;
+			margin-left: 50px;
+		}
+		.btn-info
+		{
+			float: right;
+			margin-right: 50px;
+		}
+	</style>
+</head>
+<body>
+<div class="container">
+	<h1>欢迎登录</h1>
+	<form action="/login" method="post" class="form-horizontal">
+	<div class="form-group">
+    <label for="username" class="col-sm-2 control-label">Username</label>
+    <div class="col-sm-10">
+      <input type="text" class="form-control" id="username" name="username" placeholder="Username">
+    </div>
+    </div>
+     <div class="form-group">
+    <label for="password" class="col-sm-2 control-label">Password</label>
+    <div class="col-sm-10">
+      <input type="text" class="form-control" id="password" placeholder="Password" name="password">
+    </div>
+     </div>
+     
+     <button class="btn btn-danger" onclick="logup(event)">Log up</button>
+     <button class="btn btn-info" onclick='login(event)'>Log in</button>
+	</form>
+</div>
+<div class="container">
+	<h1>欢迎注册</h1>
+	<form action="/logup" method="post" class="form-horizontal">
+	<div class="form-group">
+    <label for="username" class="col-sm-2 control-label">Username</label>
+    <div class="col-sm-10">
+      <input type="text" class="form-control" id="username2" name="username" placeholder="Username">
+    </div>
+    </div>
+     <div class="form-group">
+    <label for="password" class="col-sm-2 control-label">Password</label>
+    <div class="col-sm-10">
+      <input type="text" class="form-control" id="password2" name="password" placeholder="Password">
+    </div>
+
+     </div>
+     <div class="form-group">
+    <label  class="col-sm-2 control-label">Retype</label>
+    <div class="col-sm-10">
+      <input type="text" class="form-control" id="repassword" placeholder="Retype">
+    </div>
+    
+     </div>
+     
+     <button class="btn btn-danger" onclick="clicklogup(event)">点击注册</button>
+     <button class="btn btn-info" onclick="backto(event)" >返回登录</button>
+	</form>
+</div>
+<script>
+	var containers=document.getElementsByClassName('container');
+	containers[1].style.display='none';
+	function logup(event)//第一个form的
+	{
+		event.preventDefault();//禁止默认事件
+	
+		containers[0].style.display='none';
+		containers[1].style.display='block';
+
+
+	}
+	function login(event)
+	{
+		//这里发送一个ajax请求就可以了
+		event.preventDefault();
+		var user={};
+		user.username=document.getElementById('username').value;
+		user.password=document.getElementById('password').value;
+		if(user.username==''||user.password=='')
+		{
+			alert('密码和用户不能为空')
+		}
+		else{
+		var xmlhttp=new XMLHttpRequest();
+		xmlhttp.onreadystatechange=function(){
+
+		}
+		xmlhttp.open('POST','/login',true);
+		xmlhttp.setRequestHeader("Content-type", "application/json");
+		xmlhttp.send(JSON.stringify(user))
+
+		}
+
+
+
+
+	}
+	function backto(event)
+	{event.preventDefault();
+		containers[0].style.display='block';
+		containers[1].style.display='none';
+	}
+	function clicklogup(event)
+	{   event.preventDefault();
+		if(document.getElementById('password2').value!=document.getElementById('repassword').value)
+		{
+			console.log(document.getElementById('password2').value);
+			console.log(document.getElementById('repassword').value);
+
+			alert('两次密码不同');
+		}
+		//这里也是一个ajax
+		else if(document.getElementById('password2').value==''||document.getElementById('repassword').value==''||document.getElementById('username2').value=='')
+		{alert('密码和用户不能为空')};
+		var user={};
+		user.username=document.getElementById('username2').value;
+		user.password=document.getElementById('password2').value;
+		var xmlhttp=new XMLHttpRequest();
+		xmlhttp.onreadystatechange=function(){
+
+		}
+		xmlhttp.open('POST','/logup',true);
+		xmlhttp.setRequestHeader("Content-type", "application/json");
+		xmlhttp.send(JSON.stringify(user));
+	
+
+		
+
+
+	}
+
+</script>
+<script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.js"></script>
+<script src="https://cdn.bootcss.com/bootstrap/3.3.5/js/bootstrap.js"></script>	
+</body>
+</html>

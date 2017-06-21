@@ -38,9 +38,9 @@
       <input type="text" class="form-control" id="password" placeholder="Password" name="password">
     </div>
      </div>
-     
-     <button class="btn btn-danger" onclick="logup(event)">Log up</button>
      <button class="btn btn-info" onclick='login(event)'>Log in</button>
+     <button class="btn btn-danger" onclick="logup(event)">Log up</button>
+     
 	</form>
 </div>
 <div class="container">
@@ -97,6 +97,14 @@
 		else{
 		var xmlhttp=new XMLHttpRequest();
 		xmlhttp.onreadystatechange=function(){
+			var text=xmlhttp.responseText;
+			console.log(text);
+			if(text=='y')
+			{
+			location.href='http://'+location.host+'/';
+			console.log(location.host);
+			}
+
 
 		}
 		xmlhttp.open('POST','/login',true);
@@ -125,18 +133,29 @@
 		}
 		//这里也是一个ajax
 		else if(document.getElementById('password2').value==''||document.getElementById('repassword').value==''||document.getElementById('username2').value=='')
-		{alert('密码和用户不能为空')};
-		var user={};
+		{alert('密码和用户不能为空');}
+	else{
+				var user={};
 		user.username=document.getElementById('username2').value;
 		user.password=document.getElementById('password2').value;
 		var xmlhttp=new XMLHttpRequest();
 		xmlhttp.onreadystatechange=function(){
+			// location.href='http://'+location.host+'/';
+			// console.log(location.host);
+		containers[0].style.display='block';
+		containers[1].style.display='none';
+
 
 		}
 		xmlhttp.open('POST','/logup',true);
 		xmlhttp.setRequestHeader("Content-type", "application/json");
 		xmlhttp.send(JSON.stringify(user));
 	
+
+	}
+
+
+
 
 		
 

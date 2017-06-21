@@ -7,11 +7,13 @@ var bodyParser = require('body-parser');
 var fs = require('fs');
 var pg = require('pg');
 var Pool = require('pg').Pool;
+var session=require('express-session');
 
 var index = require('./routes/index');
 var users = require('./routes/users');
 
 var app = express();
+
 var server = require('http').createServer(app);
 var config = {
 	host: '47.94.226.150',
@@ -32,7 +34,12 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
 	extended: false
 }));
-app.use(cookieParser());
+app.use(cookieParser('key'));
+app.use(session({
+  secret: 'key',
+  resave: false,
+  saveUninitialized: true
+}))
 app.use(express.static(path.join(__dirname, 'public')));
 var pointsnum;
 
@@ -111,10 +118,20 @@ app.get('/', function(req, res) {
 		})
 
 		pointsnum = result.rows.length;
+		if(req.session.user)
+		{
+			var user=req.session.user;
+			var name=user.name;
+			// res.render('getgeo.jade');
+			res.sendFile(__dirname + '/views/ex1.html');
+		}
+		else
+		{
+			res.redirect("/userlog");
+		}
 
 
-
-		res.render('getgeo.jade');
+		
 	});
 });
 
@@ -208,10 +225,42 @@ app.post('/delbar', function(req, res) {
 });
 app.post('/login', function(req, res) {
 	console.log(req.body);
-	// pool.query()
+	var sql="SELECT userpassword FROM public.user WHERE username='"+req.body.username+"'";
+	console.log(sql);
+	pool.query(sql,function(err,result){
+		if(err)
+		{
+			console.log(err);
+		}
+		console.log(result.rows[0].userpassword);
+		if(result.rows[0].userpassword==req.body.password)
+		{
+			var user={
+				username:req.body.username,
+				password:req.body.password
+			}
+			req.session.user=user;
+			res.send('y');
+
+
+
+		}
+
+
+	})
+
 })
 app.post('/logup', function(req, res) {
 	console.log(req.body);
+	var sql = "INSERT INTO public.user (username,userpassword) VALUES ('"+req.body.username+"', '"+ req.body.password + "')";
+	console.log(sql);
+	pool.query(sql, function(err, result) {
+		if (err) {
+			console.log(err);
+		}
+		console.log(result);
+		res.send('成功插入');
+	})
 })
 
 // catch 404 and forward to error handler

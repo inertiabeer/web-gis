@@ -102,6 +102,7 @@
           xmlhttp2.onreadystatechange = function() {
             if (xmlhttp2.readyState == 4 && xmlhttp2.status == 200) {
               console.log('成功');
+              history.go(0);
 
             }
 

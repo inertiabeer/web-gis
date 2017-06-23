@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Draw and Modify Features</title>
+    <title>My Map</title>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="https://openlayers.org/en/v4.1.1/css/ol.css" type="text/css">
     <!-- The line below is only needed for old environments like Internet Explorer and Android 4.x-->
@@ -11,6 +11,23 @@
     <link href="https://cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.css" rel="stylesheet">
   </head>
   <body>
+  <div class="nav">
+  <ul class="nav nav-pills">
+  <li role="presentation" class="active"><a href="#">Home</a></li>
+  <li role="presentation"><a href="https://github.com/inertiabeer/web-gis">Code</a></li>
+  <li role="presentation"><a href="https://inertiabeer.github.io/">Contact me</a></li>
+  
+   <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">User action <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+          </ul>
+  </li>
+  <li role="presentation"><a href="#" class="logout">Log out</a></li>
+  <li role="presentation" id="display_name"><a href="#"><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>username</a></li>
+  
+
+</ul>
+  </div>
     <div class="main">
       <div id="sidebar">
         <div>
@@ -24,14 +41,7 @@
           </div>
           <button id="upload" class="btn btn-primary">上传</button>
         </div>
-        <!--
-        <form class="form-inline"></form>
-        城市名称：
-        <input id="name" type="text">
-        城市坐标：
-        <input id="point" type="text">
-        <button id="upload" class="btn btn-primary">上传</button>
-        -->
+
         <div>
           <div class="form-group">
             <label for="delete">城市名称: </label>
@@ -39,12 +49,7 @@
           </div>
           <button onclick="m_delete()" class="btn btn-primary">删除</button>
         </div>
-        <!--
-        <label for="">输入你要删除的城市姓名
-        <input id="delete" type="text">
-        </label>
-        <button onclick="m_delete()" class="btn btn-primary">删除</button>
-        -->
+
         <div>
           <div class="form-group">
             <label for="query">城市名称: </label>
@@ -65,23 +70,12 @@
         </table>
       </div>
     </div>
-    <!--
-    <div class="stage">
-    <div class="container">
-    <img src="img/1.jpg" alt="">
-    <img src="img/2.jpg" alt="">
-    <img src="img/3.jpg" alt="">
-    <img src="img/4.jpg" alt="">
-    <img src="img/5.jpg" alt="">
-    <img src="img/6.jpg" alt="">
-    </div>
-    </div>
-    -->
     <div id="popup" class="ol-popup"><a id="popup-closer" href="#" class="ol-popup-closer"></a>
       <div id="popup-content"></div>
     </div>
     <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.js"></script>
     <script src="https://cdn.bootcss.com/bootstrap/3.3.5/js/bootstrap.js"></script>
+    <script src=js/nav.js></script>
     <script src="js/main.js"></script>
     <script src="js/delbar.js"></script>
   </body>

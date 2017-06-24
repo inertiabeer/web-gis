@@ -19,7 +19,7 @@ var server = require('http').createServer(app);
 var config = {
 	host: '47.94.226.150',
 	user: 'postgres',
-	password: 'xxxxx',
+	password: '986619667',
 	database: 'gis',
 }; //连接池的配置
 var pool = new Pool(config) //新建一个连接池
@@ -50,36 +50,8 @@ app.get('/', function(req, res) {
 		if (err) {
 			console.log(err);
 		}
-		var Feas = {
-			type: "FeatureCollection",
-			totalFeature: result.rows.length,
-			features: []
-		}
-		result.rows.forEach(function(item, index) {
-			let feature = {
-				properties: {
-					name: item.name,
-					res2_4m_: item.res2_4m_,
-					pinyin: item.pinyin,
 
-
-				},
-				geometry: JSON.parse(item.st_asgeojson),
-				type: "Feature",
-				id: "points." + item.res2_4m_
-
-			};
-			Feas.features.push(feature);
-
-
-
-		})
-		fs.writeFile('./public/2.json', JSON.stringify(Feas), 'utf-8', function(err, data) {
-			if (err)
-				console.log(err)
-		})
-
-		pointsnum = result.rows.length;
+		pointsnum =result.rows[result.rows.length-1].res2_4m_;//这里使得结果的id比前一个加上1
 		if(req.session.user)
 		{
 			var user=req.session.user;
@@ -102,13 +74,22 @@ app.get('/userlog', function(req, res) {
 
 })
 app.use('/users', users);
-app.use('/geojson', function(req, res) {
-	fs.readFile('./public/2.json', 'utf8', function(err, data) {
+app.post('/geojson', function(req, res) {
+	let pointarr = [];
+	pool.query('SELECT *,(ST_AsGeoJSON(geom)) FROM res2_4m', function(err, result) {
 		if (err) {
 			console.log(err);
 		}
-		res.send(data);
-		console.log('hello');
+		result.rows.forEach(function(item, index) {
+			let point = {
+				id: item.res2_4m_,
+				name: item.name,
+				geometry: JSON.parse(item.st_asgeojson)
+
+			}
+			pointarr.push(point);
+		})
+		res.send(JSON.stringify(pointarr));
 	});
 });
 app.post('/query', function(req, res) {
@@ -122,24 +103,19 @@ app.post('/query', function(req, res) {
 
 
 	console.log(point);
-	fs.readFile('./public/2.json', 'utf8', function(err, data) {
-		if (err)
-			console.log(err);
-		var m_features = JSON.parse(data);
-		var f_arr = m_features.features;
-		for (let i = 0; i < f_arr.length; i++) {
-			console.log(f_arr[i].properties.name);
-			if (f_arr[i].properties.name == point) {
-
-				res.send(JSON.stringify(f_arr[i]));
-				console.log(f_arr[i]);
-				break;
-			}
-			console.log(i);
-
-
+	var querysql="SELECT *,(ST_AsGeoJSON(geom)) from res2_4m where name='"+point+"'";
+	pool.query(querysql,function(err,result){
+		if(err)
+		{	console.log(err);
+			res.send('error');
 		}
-		console.log('完成');
+		else
+		{
+			console.log(result.rows[0].st_asgeojson);
+			res.send(result.rows[0].st_asgeojson);
+			
+		}
+
 
 	})
 });
@@ -158,7 +134,7 @@ app.post('/upload', function(req, res) {
 		if (err) {
 			console.log(err);
 		}
-		res.send('hello');
+		res.send(JSON.stringify(pointsnum + 1));
 
 
 
@@ -192,34 +168,58 @@ app.post('/delete', function(req, res) {
 		if(err)
 			console.log(err);
 	})
-
+	var point_id;
+	new Promise(get_ID).then(function(id){
 	var deletesql = "DELETE FROM res2_4m WHERE name = '" + req.body.deletePoint + "'";
 	console.log(deletesql);
-
 	pool.query(deletesql, function(err, result) {
 		if (err) {
 			console.log(err);
 
 		}
-		res.send("hello");
+		console.log(id);
+		console.log(point_id);
+		res.send(JSON.stringify(id));
 	})
-})
-app.post('/delbar', function(req, res) {
-	let pointarr = [];
-	pool.query('SELECT *,(ST_AsGeoJSON(geom)) FROM res2_4m', function(err, result) {
-		if (err) {
-			console.log(err);
+
+	})
+
+	function get_ID(resolve,reject){
+	var querysql="SELECT res2_4m_,(ST_AsGeoJSON(geom)) from res2_4m where name='"+req.body.deletePoint+"'";
+	pool.query(querysql,function(err,result){
+		if(err)
+		{	console.log(err);
+			reject(err);
 		}
-		result.rows.forEach(function(item, index) {
-			let point = {
-				id: item.res2_4m_,
-				name: item.name
-			}
-			pointarr.push(point);
-		})
-		res.send(JSON.stringify(pointarr));
-	});
-});
+		else
+		{
+			console.log(result.rows[0]);
+			point_id=result.rows[0].res2_4m_;
+			resolve(point_id);
+			
+		}
+
+
+	})
+    };
+
+})
+// app.post('/delbar', function(req, res) {
+// 	let pointarr = [];
+// 	pool.query('SELECT *,(ST_AsGeoJSON(geom)) FROM res2_4m', function(err, result) {
+// 		if (err) {
+// 			console.log(err);
+// 		}
+// 		result.rows.forEach(function(item, index) {
+// 			let point = {
+// 				id: item.res2_4m_,
+// 				name: item.name
+// 			}
+// 			pointarr.push(point);
+// 		})
+// 		res.send(JSON.stringify(pointarr));
+// 	});
+// });
 app.post('/login', function(req, res) {
 	console.log(req.body);
 	var sql="SELECT userpassword FROM public.user WHERE username='"+req.body.username+"'";

@@ -1,13 +1,6 @@
       var raster = new ol.layer.Tile({
         source: new ol.source.OSM()
       });
-      var vector = new ol.layer.Vector({
-        source: new ol.source.Vector({
-          url: '2.json',
-          format: new ol.format.GeoJSON(),
-          wrapX: false
-        })
-      });
 
 
       var container = document.getElementById('popup');
@@ -28,7 +21,7 @@
 
 
       var map = new ol.Map({
-        layers: [raster, vector],
+        layers: [raster],
         overlays: [overlay],
         target: 'map',
         view: new ol.View({
@@ -47,7 +40,7 @@
         if (feature !== undefined) {
           console.log(feature);
           content.innerHTML = '<div style="background-color: white"><p>You clicked here:</p><code>' + hdms +
-            '</code><p>城市名称：' + feature.O.name + '  ID:' + feature.O.res2_4m_ + '</p></div>';
+            '</code><p>城市名称：' + feature.O.name + '  ID:' + feature.a + '</p></div>';
 
         } else {
           content.innerHTML = '<div style="background-color: white"><p>You clicked here:</p><code>' + hdms +
@@ -62,9 +55,6 @@
 
 
 
-      /**
-       * Handle change event.
-       */
       document.getElementById('upload').onclick = function() //上传函数
         {
           var moka = map.getView().getCenter();
@@ -82,7 +72,17 @@
             xmlhttp.onreadystatechange = function() {
               if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
                 console.log('上传成功');
-                location.reload();
+                var id=xmlhttp.responseText;
+                var feature=new ol.Feature({
+                  geometry:new ol.geom.Point(moka),
+                  name:data.name
+                })
+                feature.a=id;
+                vec_source.addFeature(feature);
+                 delbar();
+
+
+
               }
             }
             xmlhttp.open('POST', '/upload', true);
@@ -102,7 +102,10 @@
           xmlhttp2.onreadystatechange = function() {
             if (xmlhttp2.readyState == 4 && xmlhttp2.status == 200) {
               console.log('成功');
-              history.go(0);
+              var result=xmlhttp2.responseText;
+              vec_source.removeFeature(vec_source.getFeatureById(result));
+               delbar();
+
 
             }
 
@@ -123,9 +126,9 @@
           xmlhttp3.onreadystatechange = function() {
             if (xmlhttp3.readyState == 4 && xmlhttp3.status == 200) {
               var data = xmlhttp3.responseText;
+              console.log(data);
               var point = JSON.parse(data);
-              console.log(point.properties.PINYIN);
-              var point_c = point.geometry.coordinates;
+              var point_c = point.coordinates;
               map.getView().setZoom(11);
               map.getView().setCenter(point_c);
               console.log(point);

@@ -1,3 +1,5 @@
+
+function delbar(){
 var xmlhttp4=new XMLHttpRequest;
 xmlhttp4.onreadystatechange=function()
 {
@@ -5,12 +7,8 @@ xmlhttp4.onreadystatechange=function()
 	{
 		var pointarr=JSON.parse(xmlhttp4.responseText);
 		console.log(pointarr.length);
-		pointarr.forEach(function(item,index){
-		
-
-
-
-        
+        $('#table').empty();
+		pointarr.forEach(function(item,index){    
         var tr = document.createElement("tr");
         var td1 = document.createElement("td");
         var td2 = document.createElement("td");
@@ -30,8 +28,11 @@ xmlhttp4.onreadystatechange=function()
 		})
 	}
 }
-xmlhttp4.open('POST','/delbar',true);
+
+xmlhttp4.open('POST','/geojson',true);
 xmlhttp4.send();
+}
+delbar();
 var deletePointArr=[];
 function de(obj)
 {

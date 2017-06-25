@@ -176,7 +176,7 @@ app.post('/delete', function(req, res) {
 	var point_id;
 	new Promise(get_ID).then(function(id){
 	var deletesql = "DELETE FROM res2_4m WHERE name = '" + req.body.deletePoint + "'";
-	console.log(deletesql);
+	console.log(deletesql);//这里使用了一个promise
 	pool.query(deletesql, function(err, result) {
 		if (err) {
 			console.log(err);

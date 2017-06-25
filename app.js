@@ -109,12 +109,17 @@ app.post('/query', function(req, res) {
 		{	console.log(err);
 			res.send('error');
 		}
+		else if(result.rows[0]==undefined) 
+		{
+			res.send('n');
+		}
 		else
 		{
-			console.log(result.rows[0].st_asgeojson);
 			res.send(result.rows[0].st_asgeojson);
-			
 		}
+			
+		
+
 
 
 	})
@@ -176,12 +181,15 @@ app.post('/delete', function(req, res) {
 		if (err) {
 			console.log(err);
 
+
 		}
 		console.log(id);
 		console.log(point_id);
 		res.send(JSON.stringify(id));
 	})
 
+	},function(err){
+		res.send(err);
 	})
 
 	function get_ID(resolve,reject){
@@ -194,8 +202,14 @@ app.post('/delete', function(req, res) {
 		else
 		{
 			console.log(result.rows[0]);
+			if(result.rows[0]==undefined)
+			{
+				reject('n');
+			}
+			else{
 			point_id=result.rows[0].res2_4m_;
 			resolve(point_id);
+		}
 			
 		}
 

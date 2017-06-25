@@ -101,10 +101,16 @@
           console.log(del_point);
           xmlhttp2.onreadystatechange = function() {
             if (xmlhttp2.readyState == 4 && xmlhttp2.status == 200) {
-              console.log('成功');
+                  console.log('成功');
               var result=xmlhttp2.responseText;
+              if(result=='n')
+              {
+                alert('没有这座城市');
+              }
+              else{
               vec_source.removeFeature(vec_source.getFeatureById(result));
                delbar();
+             }
 
 
             }
@@ -126,12 +132,19 @@
           xmlhttp3.onreadystatechange = function() {
             if (xmlhttp3.readyState == 4 && xmlhttp3.status == 200) {
               var data = xmlhttp3.responseText;
+              if(data=='n')
+              {
+                alert('找不到这座城市')
+              }
+              else
+              {
               console.log(data);
               var point = JSON.parse(data);
               var point_c = point.coordinates;
               map.getView().setZoom(11);
               map.getView().setCenter(point_c);
               console.log(point);
+              }
             }
           }
           xmlhttp3.open('POST', '/query', true);

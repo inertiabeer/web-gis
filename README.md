@@ -20,3 +20,7 @@ git clone之后，执行npm install 就可以在本地运行这个程序
 将一些读取json数据的请求改为直接从数据库中读取
 
 添加了favicon.icon
+
+## 修改bug
+
+修复了删除和查询不存在的城市的bug

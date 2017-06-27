@@ -30,6 +30,9 @@
           zoom: 4
         })
       });
+      map.addControl(new ol.control.OverviewMap());
+      map.addControl(new ol.control.FullScreen());
+      map.addControl(new ol.control.Rotate());
       map.on('singleclick', function(evt) {
         var coordinate = evt.coordinate;
         var pixel = map.getEventPixel(evt.originalEvent);
@@ -79,6 +82,11 @@
                 })
                 feature.a=id;
                 vec_source.addFeature(feature);
+                var hdms = ol.coordinate.toStringHDMS(moka);
+          content.innerHTML = '<div style="background-color: white"><p>You uploaded here:</p><code>' + hdms +
+            '</code><p>城市名称：' + feature.O.name + '  ID:' + feature.a + '</p></div>';
+                 overlay.setPosition(moka);
+
                  delbar();
 
 
@@ -143,6 +151,11 @@
               var point_c = point.coordinates;
               map.getView().setZoom(11);
               map.getView().setCenter(point_c);
+                var hdms = ol.coordinate.toStringHDMS(point_c);
+                content.innerHTML='<div style="background-color: white"><p>你刚才查询了 城市名称：'+queryPoint+'</p><code>' + hdms +
+                 '</code></div>';
+                 overlay.setPosition(point_c);
+
               console.log(point);
               }
             }

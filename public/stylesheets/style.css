@@ -9,6 +9,11 @@ body {
   margin: 0 auto;
 
 }
+.img>img
+{
+  width: 200px;
+
+}
 .nav>ul>li
 {
   margin-right: 30px;

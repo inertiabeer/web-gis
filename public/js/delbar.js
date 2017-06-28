@@ -41,6 +41,7 @@ function de(obj)
 	     let point_name=tr.firstElementChild.nextElementSibling.innerHTML;
 	     console.log(point_name);
 	     deletePointArr.push(point_id);
+                      vec_source.removeFeature(vec_source.getFeatureById(point_id));
          tr.parentNode.removeChild(tr);
          console.log(deletePointArr);
          var xmlhttp2=new XMLHttpRequest;

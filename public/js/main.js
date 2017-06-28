@@ -42,8 +42,16 @@
         var hdms = ol.coordinate.toStringHDMS(coordinate);
         if (feature !== undefined) {
           console.log(feature);
+          if(feature.path)
+          {
+                    content.innerHTML = '<div class="img" style="background-color: white"><p>You uploaded here:</p><code>' + hdms +
+                 '</code><p>城市名称：' + feature.O.name + '  ID:' + feature.a + '</p><img src=./'+feature.path+'></div>';
+
+          }
+          else{
           content.innerHTML = '<div style="background-color: white"><p>You clicked here:</p><code>' + hdms +
             '</code><p>城市名称：' + feature.O.name + '  ID:' + feature.a + '</p></div>';
+          }
 
         } else {
           content.innerHTML = '<div style="background-color: white"><p>You clicked here:</p><code>' + hdms +
@@ -62,29 +70,62 @@
         {
           var moka = map.getView().getCenter();
 
-          var data = {};
-          data.name = document.getElementById('name').value;
-          if (data.name == '') {
+         
+         var name = document.getElementById('name').value;
+          if (name == '') {
             alert('不能为空，请重新输入')
           } else {
-            data.point = {
+              var point = {
               type: 'Point',
               coordinates: moka
             }
+
+            var data =new FormData();
+            data.append('point',JSON.stringify(point));
+            data.append('img',document.getElementById('img').files[0]);
+            data.append('name',name);
+
             var xmlhttp = new XMLHttpRequest;
             xmlhttp.onreadystatechange = function() {
               if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
                 console.log('上传成功');
-                var id=xmlhttp.responseText;
+          
+
+
+
+                
+                var id=JSON.parse(xmlhttp.responseText);
                 var feature=new ol.Feature({
                   geometry:new ol.geom.Point(moka),
-                  name:data.name
+                  name:name
                 })
-                feature.a=id;
+                var hdms = ol.coordinate.toStringHDMS(moka);//这里是对经纬度进行转换
+
+                if(id.img)//这里进行判断如果有img属性就是可以加图片
+                { feature.a=id.id;
+
+
+
+                  var path=id.img;
+                  path=path.split('/')[1];
+                  console.log(path);
+                  feature.path=path;
+                  content.innerHTML = '<div class="img" style="background-color: white"><p>You uploaded here:</p><code>' + hdms +
+                 '</code><p>城市名称：' + feature.O.name + '  ID:' + feature.a + '</p><img src=./'+path+'></div>';
+
+
+
+                }
+                else
+                {  feature.a=id;
+                  content.innerHTML = '<div style="background-color: white"><p>You uploaded here:</p><code>' + hdms +
+                 '</code><p>城市名称：' + feature.O.name + '  ID:' + feature.a + '</p></div>';
+
+
+                }
                 vec_source.addFeature(feature);
-                var hdms = ol.coordinate.toStringHDMS(moka);
-          content.innerHTML = '<div style="background-color: white"><p>You uploaded here:</p><code>' + hdms +
-            '</code><p>城市名称：' + feature.O.name + '  ID:' + feature.a + '</p></div>';
+                
+
                  overlay.setPosition(moka);
 
                  delbar();
@@ -94,8 +135,8 @@
               }
             }
             xmlhttp.open('POST', '/upload', true);
-            xmlhttp.setRequestHeader("Content-type", "application/json");
-            xmlhttp.send(JSON.stringify(data));
+            // xmlhttp.setRequestHeader("Content-type", "multipart/form-data");
+            xmlhttp.send(data);
           }
         }
 
@@ -147,13 +188,27 @@
               else
               {
               console.log(data);
-              var point = JSON.parse(data);
+              var city = JSON.parse(data);
+              console.log(city);
+              var point=city.point;
               var point_c = point.coordinates;
-              map.getView().setZoom(11);
+
+              // map.getView().setZoom(11);
               map.getView().setCenter(point_c);
                 var hdms = ol.coordinate.toStringHDMS(point_c);
+                if(city.imgpath)
+                {
+                  var path=city.imgpath.split('/')[1];
+
+                  content.innerHTML = '<div class="img" style="background-color: white"><p>You queryed :</p><code>' + hdms +
+                 '</code><p>城市名称：' + queryPoint +  '</p><img src=./'+path+'></div>';
+
+                }
+
+                 else{
                 content.innerHTML='<div style="background-color: white"><p>你刚才查询了 城市名称：'+queryPoint+'</p><code>' + hdms +
                  '</code></div>';
+                 }
                  overlay.setPosition(point_c);
 
               console.log(point);

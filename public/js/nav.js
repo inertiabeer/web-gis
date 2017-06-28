@@ -29,12 +29,29 @@ var vec_source=new ol.source.Vector();
       $.post('/geojson',function(data,status){
         let arr=JSON.parse(data);
         arr.forEach(function(item,index){
-          let feature=new ol.Feature({
+        	if(item.imgpath)
+        	{
+        		var feature=new ol.Feature({
+            geometry:new ol.geom.Point(item.geometry.coordinates),
+            name:item.name,
+            id:item.id,
+            imgpath:item.imgpath
+            });
+        	feature.path=item.imgpath.split('/')[1];
+
+        	}
+        	else{
+        	var feature=new ol.Feature({
             geometry:new ol.geom.Point(item.geometry.coordinates),
             name:item.name,
             id:item.id
-          });
+            });
+
+        	}
+
+
           feature.a=item.id;
+
           vec_source.addFeature(feature);
          
 

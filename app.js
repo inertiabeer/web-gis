@@ -7,13 +7,14 @@ var bodyParser = require('body-parser');
 var fs = require('fs');
 var pg = require('pg');
 var Pool = require('pg').Pool;
-var session=require('express-session');
+var session = require('express-session');
+var formidable = require('formidable');
 
 var index = require('./routes/index');
 var users = require('./routes/users');
 
 var app = express();
-var moment=require('moment');
+var moment = require('moment');
 
 var server = require('http').createServer(app);
 var config = {
@@ -37,11 +38,12 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(cookieParser('key'));
 app.use(session({
-  secret: 'key',
-  resave: false,
-  saveUninitialized: true
+	secret: 'key',
+	resave: false,
+	saveUninitialized: true
 }))
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'img')));
 var pointsnum;
 
 app.get('/', function(req, res) {
@@ -51,21 +53,18 @@ app.get('/', function(req, res) {
 			console.log(err);
 		}
 
-		pointsnum =result.rows[result.rows.length-1].res2_4m_;//这里使得结果的id比前一个加上1
-		if(req.session.user)
-		{
-			var user=req.session.user;
-			var name=user.name;
+		pointsnum = result.rows[result.rows.length - 1].res2_4m_; //这里使得结果的id比前一个加上1
+		if (req.session.user) {
+			var user = req.session.user;
+			var name = user.name;
 			// res.render('getgeo.jade');
 			res.sendFile(__dirname + '/views/ex1.html');
-		}
-		else
-		{
+		} else {
 			res.redirect("/userlog");
 		}
 
 
-		
+
 	});
 });
 
@@ -80,10 +79,12 @@ app.post('/geojson', function(req, res) {
 		if (err) {
 			console.log(err);
 		}
-		result.rows.forEach(function(item, index) {
+		result.rows.forEach(function(item, index) {//数据库中叫做imgpath
+
 			let point = {
 				id: item.res2_4m_,
 				name: item.name,
+				imgpath:item.imgpath,
 				geometry: JSON.parse(item.st_asgeojson)
 
 			}
@@ -95,71 +96,123 @@ app.post('/geojson', function(req, res) {
 app.post('/query', function(req, res) {
 	console.log(req.body.queryPoint);
 	var point = req.body.queryPoint;
-	var addsql="INSERT INTO user_"+req.session.user.username+"(action,time) VALUES('queryed "+point+"','"+moment().format('YYYY-MM-DD HH:mm:ss')+"')";
-	pool.query(addsql,function(err,result){
-		if(err)
+	var addsql = "INSERT INTO user_" + req.session.user.username + "(action,time) VALUES('queryed " + point + "','" + moment().format('YYYY-MM-DD HH:mm:ss') + "')";
+	pool.query(addsql, function(err, result) {
+		if (err)
 			console.log(err);
 	})
 
 
 	console.log(point);
-	var querysql="SELECT *,(ST_AsGeoJSON(geom)) from res2_4m where name='"+point+"'";
-	pool.query(querysql,function(err,result){
-		if(err)
-		{	console.log(err);
+	var querysql = "SELECT *,(ST_AsGeoJSON(geom)) from res2_4m where name='" + point + "'";
+	pool.query(querysql, function(err, result) {
+		if (err) {
+			console.log(err);
 			res.send('error');
-		}
-		else if(result.rows[0]==undefined) 
-		{
+		} else if (result.rows[0] == undefined) {
 			res.send('n');
-		}
-		else
-		{
-			res.send(result.rows[0].st_asgeojson);
-		}
+		} else {
+			var data={
+				imgpath:result.rows[0].imgpath,
+				point:JSON.parse(result.rows[0].st_asgeojson)
+			}
 			
-		
+			res.send(JSON.stringify(data));
+		}
 
 
 
 	})
 });
 app.post('/upload', function(req, res) {
-	console.log(req.body);
-	var geoPoint = JSON.stringify(req.body.point);
-	var addsql="INSERT INTO user_"+req.session.user.username+"(action,time) VALUES('uploaded"+req.body.name+"','"+moment().format('YYYY-MM-DD HH:mm:ss')+"')";
-	pool.query(addsql,function(err,result){
-		if(err)
-			console.log(err);
-	})
-	// var uploadsql="INSERT INTO res2_4m (res2_4m_,name,geom) VALUES ("+(pointsnum+1)+","+req.body.name+","+"st_transform(st_geomfromtext(POINT "+"("+req.body.point.coordinates[0]+" "+req.body.point.coordinates[1]+")"+",900913),4326)"+")"+")";
-	var uploadsql = "INSERT INTO res2_4m (res2_4m_,name,geom) VALUES (" + (pointsnum + 1) + ",'" + req.body.name + "'," + "st_GeomFromGeoJSON('" + geoPoint + "')" + ")";
-	console.log(uploadsql);
-	pool.query(uploadsql, function(err, result) {
-		if (err) {
-			console.log(err);
-		}
-		res.send(JSON.stringify(pointsnum + 1));
+	var form = new formidable.IncomingForm();
+	form.encoding = 'utf-8';
+	form.uploadDir = "./img";
+	form.keepExtensions = true;
+	form.parse(req, function(err, fields, files) {
+		var point = JSON.parse(fields.point);
+		var addsql = "INSERT INTO user_" + req.session.user.username + "(action,time) VALUES('uploaded " + fields.name + "','" + moment().format('YYYY-MM-DD HH:mm:ss') + "')";
+		pool.query(addsql, function(err, result) {
+			if (err)
+				console.log(err);
+		})
+
+		if (files.img) {
+			var path = JSON.parse(JSON.stringify(files.img)).path;//在数据库中叫做imgpath
+			var uploadsql = "INSERT INTO res2_4m (imgpath,res2_4m_,name,geom) VALUES ('"+path+"'," + (pointsnum + 1) + ",'" + fields.name + "'," + "st_GeomFromGeoJSON('" + fields.point + "')" + ")";
+			console.log(uploadsql);
+			pool.query(uploadsql, function(err, result) {
+			if (err) {
+				console.log(err);
+			}
+			var img={
+				id:(pointsnum + 1),
+				img:path
+			}
+			res.send(JSON.stringify(img));
+
+
+
+		})
+
+
+		} else {
+			var uploadsql = "INSERT INTO res2_4m (res2_4m_,name,geom) VALUES (" + (pointsnum + 1) + ",'" + fields.name + "'," + "st_GeomFromGeoJSON('" + fields.point + "')" + ")";
+			console.log(uploadsql);
+
+
+		
+		pool.query(uploadsql, function(err, result) {
+			if (err) {
+				console.log(err);
+			}
+			res.send(JSON.stringify(pointsnum+1));
+
+
+
+		})
+	    } 
+
+
+
+		// var uploadsql = "INSERT INTO res2_4m (res2_4m_,name,geom) VALUES (" + (pointsnum + 1) + ",'" + fields.name + "'," + "st_GeomFromGeoJSON('" + fields.point + "')" + ")";
+		// console.log(uploadsql);
+		// pool.query(uploadsql, function(err, result) {
+		// 	if (err) {
+		// 		console.log(err);
+		// 	}
+		// 	res.send(JSON.stringify(pointsnum + 1));
+
+
+
+		// })
 
 
 
 	})
+
+
+	// var addsql="INSERT INTO user_"+req.session.user.username+"(action,time) VALUES('uploaded "+req.body.name+"','"+moment().format('YYYY-MM-DD HH:mm:ss')+"')";
+	// pool.query(addsql,function(err,result){
+	// 	if(err)
+	// 		console.log(err);
+	// })
+
 
 });
-app.post('/displayname',function(req,res){
+app.post('/displayname', function(req, res) {
 	console.log(req.session.user);
 	res.send(req.session.user.username);
 });
-app.post('/useraction',function(req,res){
-	let sql="SELECT * FROM  user_"+req.session.user.username;
-	pool.query(sql,function(err,result){
-		if(err)
-		{
+app.post('/useraction', function(req, res) {
+	let sql = "SELECT * FROM  user_" + req.session.user.username;
+	pool.query(sql, function(err, result) {
+		if (err) {
 			console.log(err);
 		}
 		console.log(result);
-		var actions=[];
-		result.rows.forEach(function(item,index){
+		var actions = [];
+		result.rows.forEach(function(item, index) {
 			actions.push(item);
 		})
 		console.log(actions);
@@ -167,136 +220,134 @@ app.post('/useraction',function(req,res){
 	})
 })
 app.post('/delete', function(req, res) {
-	console.log(req.body);
-	var addsql="INSERT INTO user_"+req.session.user.username+"(action,time) VALUES('deleted"+req.body.deletePoint+"','"+moment().format('YYYY-MM-DD HH:mm:ss')+"')";
-	pool.query(addsql,function(err,result){
-		if(err)
-			console.log(err);
+		console.log(req.body);
+		var addsql = "INSERT INTO user_" + req.session.user.username + "(action,time) VALUES('deleted" + req.body.deletePoint + "','" + moment().format('YYYY-MM-DD HH:mm:ss') + "')";
+		pool.query(addsql, function(err, result) {
+			if (err)
+				console.log(err);
+		})
+		var point_id;
+		new Promise(get_ID).then(function(id) {
+			var deletesql = "DELETE FROM res2_4m WHERE name = '" + req.body.deletePoint + "'";
+			console.log(deletesql); //这里使用了一个promise
+			pool.query(deletesql, function(err, result) {
+				if (err) {
+					console.log(err);
+
+
+				}
+				console.log(id);
+				console.log(point_id);
+				res.send(JSON.stringify(id));
+			})
+
+		}, function(err) {
+			res.send(err);
+		})
+
+		function get_ID(resolve, reject) {
+			var querysql = "SELECT res2_4m_,(ST_AsGeoJSON(geom)) from res2_4m where name='" + req.body.deletePoint + "'";
+			pool.query(querysql, function(err, result) {
+				if (err) {
+					console.log(err);
+					reject(err);
+				} else {
+					console.log(result.rows[0]);
+					if (result.rows[0] == undefined) {
+						reject('n');
+					} else {
+						point_id = result.rows[0].res2_4m_;
+						resolve(point_id);
+					}
+
+				}
+
+
+			})
+		};
+
 	})
-	var point_id;
-	new Promise(get_ID).then(function(id){
-	var deletesql = "DELETE FROM res2_4m WHERE name = '" + req.body.deletePoint + "'";
-	console.log(deletesql);//这里使用了一个promise
-	pool.query(deletesql, function(err, result) {
-		if (err) {
-			console.log(err);
-
-
-		}
-		console.log(id);
-		console.log(point_id);
-		res.send(JSON.stringify(id));
-	})
-
-	},function(err){
-		res.send(err);
-	})
-
-	function get_ID(resolve,reject){
-	var querysql="SELECT res2_4m_,(ST_AsGeoJSON(geom)) from res2_4m where name='"+req.body.deletePoint+"'";
-	pool.query(querysql,function(err,result){
-		if(err)
-		{	console.log(err);
-			reject(err);
-		}
-		else
-		{
-			console.log(result.rows[0]);
-			if(result.rows[0]==undefined)
-			{
-				reject('n');
-			}
-			else{
-			point_id=result.rows[0].res2_4m_;
-			resolve(point_id);
-		}
-			
-		}
-
-
-	})
-    };
-
-})
-// app.post('/delbar', function(req, res) {
-// 	let pointarr = [];
-// 	pool.query('SELECT *,(ST_AsGeoJSON(geom)) FROM res2_4m', function(err, result) {
-// 		if (err) {
-// 			console.log(err);
-// 		}
-// 		result.rows.forEach(function(item, index) {
-// 			let point = {
-// 				id: item.res2_4m_,
-// 				name: item.name
-// 			}
-// 			pointarr.push(point);
-// 		})
-// 		res.send(JSON.stringify(pointarr));
-// 	});
-// });
+	// app.post('/delbar', function(req, res) {
+	// 	let pointarr = [];
+	// 	pool.query('SELECT *,(ST_AsGeoJSON(geom)) FROM res2_4m', function(err, result) {
+	// 		if (err) {
+	// 			console.log(err);
+	// 		}
+	// 		result.rows.forEach(function(item, index) {
+	// 			let point = {
+	// 				id: item.res2_4m_,
+	// 				name: item.name
+	// 			}
+	// 			pointarr.push(point);
+	// 		})
+	// 		res.send(JSON.stringify(pointarr));
+	// 	});
+	// });
 app.post('/login', function(req, res) {
 	console.log(req.body);
-	var sql="SELECT userpassword FROM public.user WHERE username='"+req.body.username+"'";
+	var sql = "SELECT userpassword FROM public.user WHERE username='" + req.body.username + "'";
 	console.log(sql);
-	pool.query(sql,function(err,result){
-		if(err)
-		{
+	pool.query(sql, function(err, result) {
+		if (err) {
 			console.log(err);
 		}
-		console.log(result.rows[0].userpassword);
-		if(result.rows[0].userpassword==req.body.password)
+		if(result.rows[0]===undefined)
 		{
-			var user={
-				username:req.body.username,
-				password:req.body.password
+			res.send('不存在此用户名')
+		}
+		else if(result.rows[0].userpassword == req.body.password) {
+			var user = {
+				username: req.body.username,
+				password: req.body.password
 			}
-			req.session.user=user;
+			req.session.user = user;
 			res.send('y');
 
 
 
+		} else {
+			res.send('用户名与密码不匹配');
 		}
 
 
 	})
 
 })
-app.post('/logout',function(req,res){
-	req.session.destroy(function(err)
-	{if(err)
-		{console.log(err);}
+app.post('/logout', function(req, res) {
+	req.session.destroy(function(err) {
+		if (err) {
+			console.log(err);
+		}
 		console.log(1);
 	})
 
-		console.log(2);
-		res.send('y');
-	})
+	console.log(2);
+	res.send('y');
+})
 app.post('/logup', function(req, res) {
 	console.log(req.body);
-	var sql = "INSERT INTO public.user (username,userpassword) VALUES ('"+req.body.username+"', '"+ req.body.password + "')";
+	var sql = "INSERT INTO public.user (username,userpassword) VALUES ('" + req.body.username + "', '" + req.body.password + "')";
 	console.log(sql);
-	var user_table="CREATE TABLE user_"+req.body.username+"(action VARCHAR, time VARCHAR)";
+	var user_table = "CREATE TABLE user_" + req.body.username + "(action VARCHAR, time VARCHAR)";
 	console.log(user_table);
-	pool.query(user_table,function(err,result){
-			if(err)
-			{
-				console.log(err);
-			}
+	pool.query(user_table, function(err, result) {
+		if (err) {
+			console.log(err);
+		}
 
 
-		});
+	});
 
 
 	pool.query(sql, function(err, result) {
 		if (err) {
 			console.log(err);
 			res.send('error');
-		}
-		else{
+		} else {
 
-		console.log(result);
-		res.send('成功插入');
-	}
+			console.log(result);
+			res.send('成功插入');
+		}
 	})
 });
 

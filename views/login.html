@@ -5,28 +5,44 @@
 	<title>用户登录</title>
 	<link href="https://cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.css" rel="stylesheet">
 	<style>
+	body
+	{
+	background-color: #4A374A;
+	color: #fff;
+	}
+	h1
+	{
+		text-shadow:0 0 10px
+	}
 
 		.container
 		{
 			text-align: center;
-			width: 450px;
+			width: 350px;
+			border:3px solid #4A374A;
+			box-shadow: 0 0 0 10px #4A374A, 0 0 5px 15px white
+
 		}
 		.btn-danger
 		{
 			float: left;
-			margin-left: 50px;
+			margin-left: 0px;
 		}
 		.btn-info
 		{
 			float: right;
-			margin-right: 50px;
+			margin-right: 0px;
 		}
 		.container
 		{
 			position: absolute;
-			top: 50%;
+			top: 10%;
 			left: 50%;
-			transform: translate(-50%, -120%);
+			transform: translate(-50%, 0);
+		}
+		label
+		{
+			font-size: 1em;
 		}
 
 	</style>
@@ -37,15 +53,15 @@
 	<form action="/login" method="post" class="form-horizontal">
 	<div class="form-group">
     <label for="username" class="col-sm-2 control-label">Username</label>
-    <div class="col-sm-10">
+<!--     <div class="col-sm-10"> -->
       <input type="text" class="form-control" id="username" name="username" placeholder="Username">
-    </div>
+<!--     </div> -->
     </div>
      <div class="form-group">
     <label for="password" class="col-sm-2 control-label">Password</label>
-    <div class="col-sm-10">
+<!--     <div class="col-sm-10"> -->
       <input type="password" class="form-control" id="password" placeholder="Password" name="password">
-    </div>
+<!--     </div> -->
      </div>
      <button class="btn btn-info" onclick='login(event)'>Log in</button>
      <button class="btn btn-danger" onclick="logup(event)">Log up</button>
@@ -57,22 +73,22 @@
 	<form action="/logup" method="post" class="form-horizontal">
 	<div class="form-group">
     <label for="username" class="col-sm-2 control-label">Username</label>
-    <div class="col-sm-10">
+<!--     <div class="col-sm-10"> -->
       <input type="text" class="form-control" id="username2" name="username" placeholder="Username">
-    </div>
+  <!--   </div> -->
     </div>
      <div class="form-group">
     <label for="password" class="col-sm-2 control-label">Password</label>
-    <div class="col-sm-10">
+  <!--   <div class="col-sm-10"> -->
       <input type="password" class="form-control" id="password2" name="password" placeholder="Password">
-    </div>
+  <!--   </div> -->
 
      </div>
      <div class="form-group">
     <label  class="col-sm-2 control-label">Retype</label>
-    <div class="col-sm-10">
+ <!--    <div class="col-sm-10"> -->
       <input type="password" class="form-control" id="repassword" placeholder="Retype">
-    </div>
+ <!--    </div> -->
     
      </div>
      

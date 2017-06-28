@@ -17,7 +17,7 @@ xmlhttp4.onreadystatechange=function()
         tr.onmouseout=function(){this.style.color='#000';};
         td1.innerHTML=item.id
         td2.innerHTML=item.name;
-        td3.innerHTML="<a href='javascript:;' onclick='de(this)'>删除</a>";
+        td3.innerHTML="<a href='javascript:;'  onclick='de(this)'>删除</a>";
         var tab=document.getElementById("table");
         tab.appendChild(tr);
         tr.appendChild(td1);

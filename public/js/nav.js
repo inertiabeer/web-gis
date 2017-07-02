@@ -23,44 +23,58 @@ $(".logout").click(function(){
 $.post('/displayname',function(data,status){
 	$('#display_name').find('a').html("<span class='glyphicon glyphicon-user' aria-hidden='true'></span>&nbspWelcome "+data);
 })
-
-
-var vec_source=new ol.source.Vector();
-      $.post('/geojson',function(data,status){
-        let arr=JSON.parse(data);
-        arr.forEach(function(item,index){
-        	if(item.imgpath)
-        	{
-        		var feature=new ol.Feature({
-            geometry:new ol.geom.Point(item.geometry.coordinates),
-            name:item.name,
-            id:item.id,
-            imgpath:item.imgpath
-            });
-        	feature.path=item.imgpath.split('/')[1];
-
-        	}
-        	else{
-        	var feature=new ol.Feature({
-            geometry:new ol.geom.Point(item.geometry.coordinates),
-            name:item.name,
-            id:item.id
-            });
-
-        	}
-
-
-          feature.a=item.id;
-
-          vec_source.addFeature(feature);
-         
-
-
-        })
-      var vector = new ol.layer.Vector({
-        source:vec_source
-      });
-      map.addLayer(vector);
+var leftflag=true;
+var rightflag=true;
+function left()
+{
+  if(leftflag)
+  {leftflag=false;
+    $('#sidebar').hide(1000,function(){
+      $('#map').animate({width:'+=20%',height:'+=120px'},100,function(){
+       
 
       })
+    });
+
+
+  }
+  else
+  {leftflag=true;
+
+    
+      $('#map').animate({width:'-=20%',height:'-=120px'},100,function(){
+
+        $('#sidebar').show(1000,function(){});
+      });
+   
+  }
+
+}
+function right()
+{
+
+   if(rightflag)
+  {rightflag=false;
+    
+    
+        
+        $('#delbar').hide(1000,function(){
+            $('#map').animate({width:'+=20%',height:'+=120px'},100,function(){});
+        });
+    
+    
+
+
+  }
+  else
+  {rightflag=true;
+
+    
+      $('#map').animate({width:'-=20%',height:'-=120px'},100,function(){
+        $('#delbar').show(1000,function(){});
+
+      })
+    
+  }
+}
 

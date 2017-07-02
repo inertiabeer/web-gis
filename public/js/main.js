@@ -18,8 +18,6 @@
         closer.blur();
         return false;
       }; //添加一个遮罩层
-
-
       var map = new ol.Map({
         layers: [raster],
         overlays: [overlay],
@@ -30,7 +28,10 @@
           zoom: 4
         })
       });
-      map.addControl(new ol.control.OverviewMap());
+      map.addControl(new ol.control.OverviewMap({view:new ol.View({
+          center: [117.117942810059, 29.1951675415039],
+          projection: "EPSG:4326"
+        })}));
       map.addControl(new ol.control.FullScreen());
       map.addControl(new ol.control.Rotate());
       map.on('singleclick', function(evt) {
@@ -63,6 +64,46 @@
 
         overlay.setPosition(coordinate);
       });
+      var vec_source=new ol.source.Vector();
+      $.post('/geojson',function(data,status){
+        let arr=JSON.parse(data);
+        arr.forEach(function(item,index){
+          if(item.imgpath)
+          {
+            var feature=new ol.Feature({
+            geometry:new ol.geom.Point(item.geometry.coordinates),
+            name:item.name,
+            id:item.id,
+            imgpath:item.imgpath
+            });
+          feature.path=item.imgpath.split('/')[1];
+
+          }
+          else{
+          var feature=new ol.Feature({
+            geometry:new ol.geom.Point(item.geometry.coordinates),
+            name:item.name,
+            id:item.id
+            });
+
+          }
+
+
+          feature.a=item.id;
+
+          vec_source.addFeature(feature);
+         
+
+
+        })
+      var vector = new ol.layer.Vector({
+        source:vec_source
+      });
+      map.addLayer(vector);
+
+      })
+      
+
 
 
 

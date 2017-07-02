@@ -18,11 +18,7 @@ body {
   position: relative;
   box-shadow: 0px 0px 10px #000;
   background-color: hsla(0,0%,100%,.3);
- 
-
-
-
-}
+ }
 #navigate::before
 {
 content:'';
@@ -44,6 +40,15 @@ filter: blur(80px);
   margin-right: 30px;
   margin-left: 30px;
   font-size: 1.5em;
+
+}
+.nav>ul>li>a
+{
+  color: #05F3E1;
+}
+#delbar a
+{
+  color: #05F3E1;
 }
 #display_name
 {
@@ -85,6 +90,10 @@ background: url(../gift.jpg) 0/cover fixed;
   overflow: hidden;
 
 }
+#sidebar input
+{
+  color: #0D0A1C;
+}
 #sidebar::before
 {
    content:'';
@@ -104,6 +113,7 @@ z-index: -1;
 	min-width: 430px;
    background-color: hsla(0,0%,100%,.3);
    box-shadow: 5px 5px 10px #000;
+   position: relative;
 }
 #delbar
 {
@@ -129,7 +139,7 @@ z-index: -1;
   right: 0;
   bottom: 0;
   left: 0;
-filter: blur(20px);
+filter: blur(40px);
 z-index: -1;
 
 

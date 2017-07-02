@@ -13,8 +13,8 @@ xmlhttp4.onreadystatechange=function()
         var td1 = document.createElement("td");
         var td2 = document.createElement("td");
         var td3 = document.createElement("td");
-        tr.onmouseover=function(){this.style.color='red';};
-        tr.onmouseout=function(){this.style.color='#000';};
+        tr.onmouseover=function(){this.style.color='#8A1717';};
+        tr.onmouseout=function(){this.style.color='#fff';};
         td1.innerHTML=item.id
         td2.innerHTML=item.name;
         td3.innerHTML="<a href='javascript:;'  onclick='de(this)'>删除</a>";

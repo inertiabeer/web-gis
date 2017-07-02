@@ -3,8 +3,36 @@
 <head>
 	<meta charset="UTF-8">
 	<title>用户登录</title>
+	<link rel="shortcut icon" href="favicon.ico">
+	<link rel="bookmark" href="favicon.ico">
 	<link href="https://cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.css" rel="stylesheet">
 	<style>
+	 @keyframes roll 
+	 {
+	 	0%
+	 	{
+	 		text-shadow:0 0 0px white;
+
+	 	}
+	 	25%
+	 	{
+	 		text-shadow:0 0 20px white;
+	 	}
+	 	50%
+	 	{
+	 		text-shadow:0 0 30px white;
+
+	 	}
+	 	75%
+	 	{
+	 		text-shadow:0 0 20px white;
+
+	 	}
+	 	100%
+	 	{
+	 		text-shadow:0 0 0px white;
+	 	}
+	 }
 	body
 	{
 	background-color: #4A374A;
@@ -12,7 +40,13 @@
 	}
 	h1
 	{
-		text-shadow:0 0 10px
+		text-shadow:0 0 10px;
+		transition: 1s;
+		animation: roll 3s linear infinite;
+	}
+	h1:hover
+	{
+		filter: blur(3px);
 	}
 
 		.container
@@ -20,9 +54,15 @@
 			text-align: center;
 			width: 350px;
 			border:3px solid #4A374A;
-			box-shadow: 0 0 0 10px #4A374A, 0 0 5px 15px white
+			box-shadow: 0 0 0 10px #4A374A, 0 0 5px 15px white;
+			transition: 2s;
 
 		}
+		.container:hover
+		{
+			box-shadow: 0 0 0 10px #4A374A, 0 0 10px 25px white;
+		}
+
 		.btn-danger
 		{
 			float: left;

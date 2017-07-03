@@ -7,22 +7,24 @@
     <!-- The line below is only needed for old environments like Internet Explorer and Android 4.x-->
     <script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=requestAnimationFrame,Element.prototype.classList,URL"></script>
     <script src="https://openlayers.org/en/v4.1.1/build/ol.js"></script>
+    <script src="https://cdn.bootcss.com/echarts/3.6.2/echarts.common.js"></script>
     <link rel="stylesheet" href="stylesheets/style.css">
     <link href="https://cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.css" rel="stylesheet">
   </head>
   <body >
   <div class="nav" id="navigate">
   <ul class="nav nav-pills">
-  <li role="presentation" class="active"><a href="#">Home</a></li>
-  <li role="presentation"><a href="https://github.com/inertiabeer/web-gis">Code</a></li>
-  <li role="presentation"><a href="https://inertiabeer.github.io/">Contact me</a></li>
+  <li role="presentation"><a href="#"><i class="icon">&#xe905;</i>&nbsp;&nbsp;Home</a></li>
+  <li role="presentation"><a href="https://github.com/inertiabeer/web-gis"><i class="icon">&#xe901;</i>&nbsp;&nbsp;Code</a></li>
+  <li role="presentation"><a href="https://inertiabeer.github.io/"><i class="icon">&#xe902;</i>&nbsp;&nbsp;Contact me</a></li>
   
    <li class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">User action <span class="caret"></span></a>
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><i class="icon">&#xe922;</i>&nbsp;&nbsp;User action<span class="caret"></span></a>
           <ul class="dropdown-menu" style="max-height: 600px;overflow: scroll;">
           </ul>
   </li>
-  <li role="presentation"><a href="#" class="logout">Log out</a></li>
+  <li role="presentation"><a href="javascript:;" onclick="showEchart()" class='echart'><i class="icon">&#xe900;</i>&nbsp;&nbsp;Echart</a></li>
+  <li role="presentation"><a href="#" class="logout"><i class="icon">&#xe974;</i>&nbsp;&nbsp;Log out</a></li>
   <li role="presentation" id="display_name"><a href="#"><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>username</a></li>
 
   
@@ -30,7 +32,7 @@
 </ul>
   </div>
   <div class="board">  
-  <i draggable="true" ondrag="drag(event)" ondragend="drag(event)">拖我</i>
+  <i class="arrow_icon"  draggable="true" ondrag="drag(event)" >&#xe903;</i>
   <ul class="nav nav-pills console">
   <li class="board_left" ><a href="javascript:;" onclick="left()"><i class="arrow_icon">&#xea39;</i></a></li>
   <li class="board_up"><a href="javascript:;" onclick="up()"><i class="arrow_icon">&#xea32;</i></a></li>
@@ -88,6 +90,7 @@
     <div id="popup" class="ol-popup"><a id="popup-closer" href="#" class="ol-popup-closer"></a>
       <div id="popup-content"></div>
     </div>
+    <div id="overlay"></div>
     <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.js"></script>
     <script src="https://cdn.bootcss.com/bootstrap/3.3.5/js/bootstrap.js"></script>
     <script src=js/nav.js></script>

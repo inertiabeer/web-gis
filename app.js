@@ -45,7 +45,7 @@ app.use(session({
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'img')));
 var pointsnum;
-
+var postcode_arr
 app.get('/', function(req, res) {
 
 	pool.query('SELECT *,(ST_AsGeoJSON(geom)) FROM res2_4m', function(err, result) {
@@ -75,10 +75,12 @@ app.get('/userlog', function(req, res) {
 app.use('/users', users);
 app.post('/geojson', function(req, res) {
 	let pointarr = [];
+	postcode_arr=[0,0,0,0,0,0,0,0,0,0];
 	pool.query('SELECT *,(ST_AsGeoJSON(geom)) FROM res2_4m', function(err, result) {
 		if (err) {
 			console.log(err);
 		}
+
 		result.rows.forEach(function(item, index) {//数据库中叫做imgpath
 
 			let point = {
@@ -89,7 +91,49 @@ app.post('/geojson', function(req, res) {
 
 			}
 			pointarr.push(point);
+			if(item.adcode93)
+			{
+				
+				switch(parseInt(item.adcode99.toString().substr(0,1)))
+				{
+					case 0:
+					postcode_arr[0]++;
+					break;
+			        case 1:
+					postcode_arr[1]++;
+					break;
+			        case 2:
+					postcode_arr[2]++;
+					break;
+					case 3:
+					postcode_arr[3]++;
+					break;
+					case 4:
+					postcode_arr[4]++;
+					break;
+					case 5:
+					postcode_arr[5]++;
+					break;
+					case 6:
+					postcode_arr[6]++;
+					break;
+					case 7:
+					postcode_arr[7]++;
+					break;
+					case 8:
+					postcode_arr[8]++;
+					break;
+					case 9:
+					postcode_arr[9]++;
+					break;
+
+
+				}
+			}
+
+
 		})
+		
 		res.send(JSON.stringify(pointarr));
 	});
 });
@@ -175,28 +219,12 @@ app.post('/upload', function(req, res) {
 
 
 
-		// var uploadsql = "INSERT INTO res2_4m (res2_4m_,name,geom) VALUES (" + (pointsnum + 1) + ",'" + fields.name + "'," + "st_GeomFromGeoJSON('" + fields.point + "')" + ")";
-		// console.log(uploadsql);
-		// pool.query(uploadsql, function(err, result) {
-		// 	if (err) {
-		// 		console.log(err);
-		// 	}
-		// 	res.send(JSON.stringify(pointsnum + 1));
-
-
-
-		// })
 
 
 
 	})
 
 
-	// var addsql="INSERT INTO user_"+req.session.user.username+"(action,time) VALUES('uploaded "+req.body.name+"','"+moment().format('YYYY-MM-DD HH:mm:ss')+"')";
-	// pool.query(addsql,function(err,result){
-	// 	if(err)
-	// 		console.log(err);
-	// })
 
 
 });
@@ -267,22 +295,7 @@ app.post('/delete', function(req, res) {
 		};
 
 	})
-	// app.post('/delbar', function(req, res) {
-	// 	let pointarr = [];
-	// 	pool.query('SELECT *,(ST_AsGeoJSON(geom)) FROM res2_4m', function(err, result) {
-	// 		if (err) {
-	// 			console.log(err);
-	// 		}
-	// 		result.rows.forEach(function(item, index) {
-	// 			let point = {
-	// 				id: item.res2_4m_,
-	// 				name: item.name
-	// 			}
-	// 			pointarr.push(point);
-	// 		})
-	// 		res.send(JSON.stringify(pointarr));
-	// 	});
-	// });
+
 app.post('/login', function(req, res) {
 	console.log(req.body);
 	var sql = "SELECT userpassword FROM public.user WHERE username='" + req.body.username + "'";
@@ -355,6 +368,9 @@ app.post('/logup', function(req, res) {
 		}
 	})
 });
+app.post('/echart',function(req,res){
+ res.send(JSON.stringify(postcode_arr));
+})
 
 
 // catch 404 and forward to error handler

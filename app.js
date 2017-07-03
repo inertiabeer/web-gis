@@ -312,6 +312,11 @@ app.post('/login', function(req, res) {
 
 	})
 
+});
+app.get('/jsonp',function(req,res){
+	var callback=req.query.callback;
+	var data='"我只是一个路人"';
+	res.send(callback+'('+data+')')
 })
 app.post('/logout', function(req, res) {
 	req.session.destroy(function(err) {

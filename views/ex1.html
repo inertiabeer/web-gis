@@ -24,11 +24,20 @@
   </li>
   <li role="presentation"><a href="#" class="logout">Log out</a></li>
   <li role="presentation" id="display_name"><a href="#"><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>username</a></li>
-  <li><a href="javascript:;" onclick="left()"><</a></li>
-  <li><a href="javascript:;" onclick="right()">></a></li>
+
   
 
 </ul>
+  </div>
+  <div class="board">  
+  <i draggable="true" ondrag="drag(event)" ondragend="drag(event)">拖我</i>
+  <ul class="nav nav-pills console">
+  <li class="board_left" ><a href="javascript:;" onclick="left()"><i class="arrow_icon">&#xea39;</i></a></li>
+  <li class="board_up"><a href="javascript:;" onclick="up()"><i class="arrow_icon">&#xea32;</i></a></li>
+  <li class="board_down"><a href="javascript:;" onclick="down()"><i class="arrow_icon">&#xea36;</i></a></li>
+  <li class="board_right"><a href="javascript:;" onclick="right()"><i class="arrow_icon">&#xea34;</i></a></li>
+  
+  </ul>
   </div>
     <div class="main">
       <div id="sidebar">

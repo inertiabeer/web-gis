@@ -25,13 +25,34 @@ $.post('/displayname',function(data,status){
 })
 var leftflag=true;
 var rightflag=true;
+function up()
+{
+  $('#navigate').hide(1000,function(){
+
+
+  });
+}
+function down()
+{
+    $('#navigate').show(1000,function(){
+
+
+  });
+}
 function left()
 {
   if(leftflag)
   {leftflag=false;
+
     $('#sidebar').hide(1000,function(){
       $('#map').animate({width:'+=20%',height:'+=120px'},100,function(){
        
+       
+            // var width= $('#map').css('width');
+            // var height=$('#map').css('height');
+            // map.setSize([width,height]);
+            // map.render();
+            map.updateSize();
 
       })
     });
@@ -44,7 +65,13 @@ function left()
     
       $('#map').animate({width:'-=20%',height:'-=120px'},100,function(){
 
-        $('#sidebar').show(1000,function(){});
+        $('#sidebar').show(1000,function(){
+        
+            // var width= $('#map').css('width');
+            // var height=$('#map').css('height');
+            // map.setSize([width,height]);
+            map.updateSize();
+        });
       });
    
   }
@@ -59,7 +86,13 @@ function right()
     
         
         $('#delbar').hide(1000,function(){
-            $('#map').animate({width:'+=20%',height:'+=120px'},100,function(){});
+            $('#map').animate({width:'+=20%',height:'+=120px'},100,function(){
+           // var width= $('#map').css('width');
+           //  var height=$('#map').css('height');
+           //  map.setSize([width,height]);
+           map.updateSize();
+
+            });
         });
     
     
@@ -71,10 +104,28 @@ function right()
 
     
       $('#map').animate({width:'-=20%',height:'-=120px'},100,function(){
-        $('#delbar').show(1000,function(){});
+        $('#delbar').show(1000,function(){
+        
+         map.updateSize();
+        });
 
       })
     
   }
 }
+function drag(event)
+{
+  console.log(event.pageX);
+  if(event.pageY!=0&&event.pageX!=0){
+     $('.board').css('top',event.pageY);
+   $('.board').css('left',event.pageX);
+  }
+ 
+
+
+
+}
+
+
+ 
 

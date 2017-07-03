@@ -64,6 +64,7 @@
 
         overlay.setPosition(coordinate);
       });
+       var vector;
       var vec_source=new ol.source.Vector();
       $.post('/geojson',function(data,status){
         let arr=JSON.parse(data);
@@ -96,8 +97,9 @@
 
 
         })
-      var vector = new ol.layer.Vector({
-        source:vec_source
+     vector = new ol.layer.Vector({
+        source:vec_source,
+        
       });
       map.addLayer(vector);
 

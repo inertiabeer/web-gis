@@ -115,7 +115,6 @@ function right()
 }
 function drag(event)
 {
-  console.log(event.pageX);
   if(event.pageY!=0&&event.pageX!=0){
      $('.board').css('top',event.pageY);
    $('.board').css('left',event.pageX);

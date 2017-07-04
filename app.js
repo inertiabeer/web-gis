@@ -20,7 +20,7 @@ var server = require('http').createServer(app);
 var config = {
 	host: '47.94.226.150',
 	user: 'postgres',
-	password: '986619667',
+	password: '你的密码',
 	database: 'gis',
 }; //连接池的配置
 var pool = new Pool(config) //新建一个连接池

@@ -36,12 +36,17 @@ font-style: normal;
 {
   position: absolute;
   color: #000;
-  margin-left: -3rem;
-  margin-top: -3rem;
+  margin-left: -2rem;
+  margin-top: -4rem;
 }
 .board>ul>li>a:hover
 {
   background-color: hsla(0,0%,100%,.3);
+
+}
+.board>ul.nav>li>a
+{
+  padding: 0px;
 
 }
 .board .board_right
@@ -68,7 +73,7 @@ font-style: normal;
 }
 body {
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
-  min-width: 1200px;
+  min-width: 1300px;
   width: 100%;
   height: 100%;
   background: url(../gift.jpg) 0/cover fixed;
@@ -105,8 +110,8 @@ filter: blur(80px);
 }
 .nav>ul>li
 {
-  margin-right: 30px;
-  margin-left: 30px;
+  margin-right: 20px;
+  margin-left: 20px;
   font-size: 1.5em;
 
 }

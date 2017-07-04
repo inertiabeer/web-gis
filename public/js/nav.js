@@ -108,10 +108,10 @@ function right()
 function drag(event)
 {
   if(event.pageY!=0&&event.pageX!=0){
-     $('.board').css('top',event.pageY);
+     $('.board').css('top','calc('+event.pageY+'px + 4rem - 2.4em)');
    $('.board').css('left',event.pageX);
   }
- 
+ //这是控制台的拖动程序
 
 
 

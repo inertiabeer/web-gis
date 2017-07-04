@@ -39,15 +39,23 @@ map.updateSize();
 
   });
 }
+function re_width()
+{//解决浮点型运算的错误
+  let width=document.getElementById('map').style.width;
+        let rewidth=width.toString().substr(0,4);
+        document.getElementById('map').style.width=Math.round(rewidth)+'%';
+
+}
 function left()
 {
   if(leftflag)
   {leftflag=false;
-
+//这里出现了浮点型运算错误
     $('#sidebar').hide(1000,function(){
       $('#map').animate({width:'+=20%',height:'+=120px'},100,function(){
        
-            map.updateSize();
+        re_width();
+        map.updateSize();
 
       })
     });
@@ -61,7 +69,7 @@ function left()
       $('#map').animate({width:'-=20%',height:'-=120px'},100,function(){
 
         $('#sidebar').show(1000,function(){
-        
+            re_width();
             map.updateSize();
         });
       });
@@ -79,9 +87,7 @@ function right()
         
         $('#delbar').hide(1000,function(){
             $('#map').animate({width:'+=20%',height:'+=120px'},100,function(){
-           // var width= $('#map').css('width');
-           //  var height=$('#map').css('height');
-           //  map.setSize([width,height]);
+           re_width();
            map.updateSize();
 
             });
@@ -97,7 +103,7 @@ function right()
     
       $('#map').animate({width:'-=20%',height:'-=120px'},100,function(){
         $('#delbar').show(1000,function(){
-        
+        re_width();
          map.updateSize();
         });
 

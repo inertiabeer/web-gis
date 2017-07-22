@@ -111,16 +111,33 @@ function right()
     
   }
 }
+let x_distance,y_distance;
 function drag(event)
 {
-  if(event.pageY!=0&&event.pageX!=0){
-     $('.board').css('top','calc('+event.pageY+'px + 4rem - 2.4em)');
-   $('.board').css('left',event.pageX);
+    if(x_distance===undefined&&y_distance===undefined)
+    {
+        x_distance= event.pageX -$(".board").offset().left;
+        y_distance=event.pageY - $(".board").offset().top;
+        console.log($(".board").offset().top);
+        console.log("x"+ x_distance+"  y "+y_distance)
+
+    }
+
+
+  if(event.pageY!==0&&event.pageX!==0){
+
+    $('.board').css('top','calc('+parseInt(event.pageY-y_distance)+'px)');
+   $('.board').css('left',event.pageX-parseInt(x_distance));
   }
  //这是控制台的拖动程序
 
 
 
+}
+function dragend()
+{
+    x_distance=undefined;
+    y_distance=undefined;
 }
 function remove_chart()
 {

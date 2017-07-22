@@ -15,7 +15,7 @@ xmlhttp4.onreadystatechange=function()
         var td3 = document.createElement("td");
         tr.onmouseover=function(){this.style.color='#FF4A08';};
         tr.onmouseout=function(){this.style.color='#fff';};
-        td1.innerHTML=item.id
+        td1.innerHTML=item.id;
         td2.innerHTML=item.name;
         td3.innerHTML="<a href='javascript:;'  onclick='de(this)'>删除</a>";
         var tab=document.getElementById("table");

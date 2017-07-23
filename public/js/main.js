@@ -67,7 +67,7 @@
        var vector;
       var vec_source=new ol.source.Vector();
       $.post('/geojson',function(data,status){
-        let arr=JSON.parse(data);
+        var arr=JSON.parse(data);
         arr.forEach(function(item,index){
           if(item.imgpath)
           {

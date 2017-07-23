@@ -37,8 +37,8 @@ var deletePointArr=[];
 function de(obj)
 {
 	     var tr=obj.parentNode.parentNode;
-	     let point_id=tr.firstElementChild.innerHTML;
-	     let point_name=tr.firstElementChild.nextElementSibling.innerHTML;
+	     var point_id=tr.firstElementChild.innerHTML;
+	     var point_name=tr.firstElementChild.nextElementSibling.innerHTML;
 	     console.log(point_name);
 	     deletePointArr.push(point_id);
                       vec_source.removeFeature(vec_source.getFeatureById(point_id));

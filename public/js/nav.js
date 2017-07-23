@@ -3,7 +3,7 @@ $(".dropdown-toggle").click(function(){
 		var actions=JSON.parse(data);
 		 $('.dropdown-menu').empty();
 		actions.forEach(function(item,index){
-			let li='<li><a href="#">you '+item.action+' in '+item.time+'</a></li>';
+			var li='<li><a href="#">you '+item.action+' in '+item.time+'</a></li>';
 
 			$('.dropdown-menu').append(li);
 		})
@@ -41,8 +41,8 @@ map.updateSize();
 }
 function re_width()
 {//解决浮点型运算的错误
-  let width=document.getElementById('map').style.width;
-        let rewidth=width.toString().substr(0,4);
+  var width=document.getElementById('map').style.width;
+        var rewidth=width.toString().substr(0,4);
         document.getElementById('map').style.width=Math.round(rewidth)+'%';
 
 }
@@ -111,31 +111,33 @@ function right()
     
   }
 }
-let x_distance,y_distance;
+var x_distance,y_distance;
 function drag(event)
 {
+    $('.board').css('visibility',"hidden");
     if(x_distance===undefined&&y_distance===undefined)
     {
-        x_distance= event.pageX -$(".board").offset().left;
-        y_distance=event.pageY - $(".board").offset().top;
-        console.log($(".board").offset().top);
-        console.log("x"+ x_distance+"  y "+y_distance)
+        x_distance= event.pageX-document.getElementsByClassName("board")[0].offsetLeft;
+
+        y_distance=event.pageY-document.getElementsByClassName("board")[0].offsetTop;
 
     }
 
 
   if(event.pageY!==0&&event.pageX!==0){
-
-    $('.board').css('top','calc('+parseInt(event.pageY-y_distance)+'px)');
-   $('.board').css('left',event.pageX-parseInt(x_distance));
+      $('.board').css('top',event.pageY-y_distance);
+      $('.board').css('left',event.pageX-x_distance);
   }
  //这是控制台的拖动程序
 
 
 
 }
-function dragend()
+function dragend(event)
 {
+    event.stopPropagation();
+    event.preventDefault();
+    $('.board').css('visibility',"visible");
     x_distance=undefined;
     y_distance=undefined;
 }

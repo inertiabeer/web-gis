@@ -133,6 +133,30 @@ function drag(event)
 
 
 }
+var dragFlag=false;
+function mousedown(event)
+{
+
+    console.log(event.pageX);
+    dragFlag=true;
+    var board=document.getElementsByClassName("board")[0];
+    x_distance= event.pageX-board.offsetLeft;
+
+    y_distance=event.pageY-board.offsetTop;
+
+
+}
+function mouseup(event)
+{
+    dragFlag=false;
+}
+function mousemove(event)
+{
+    if(dragFlag&&event.pageY!==0&&event.pageX!==0){
+        $('.board').css('top',event.pageY-y_distance);
+        $('.board').css('left',event.pageX-x_distance);
+    }
+}
 function dragend(event)
 {
     event.stopPropagation();

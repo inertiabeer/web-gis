@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="stylesheets/style.css">
     <link href="https://cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.css" rel="stylesheet">
   </head>
-  <body >
+  <body onmousemove="mousemove(event)">
   <div class="nav" id="navigate">
   <ul class="nav nav-pills">
   <li role="presentation"><a href="#"><i class="icon">&#xe905;</i>&nbsp;&nbsp;Home</a></li>
@@ -31,8 +31,10 @@
 
 </ul>
   </div>
-  <div class="board">  
-  <i class="arrow_icon"  draggable="true" ondrag="drag(event)" >&#xe903;</i>
+  <div class="board" onmousedown="mousedown(event)" onmouseup="mouseup(event)">
+    <!--drag事件不太好用，试试能不能自己封装一个-->
+    <!--draggable="true" ondrag="drag(event)" ondragend="dragend(event)"-->
+  <i class="arrow_icon"   >&#xe903;</i>
   <ul class="nav nav-pills console">
   <li class="board_left" ><a href="javascript:;" onclick="left()"><i class="arrow_icon">&#xea39;</i></a></li>
   <li class="board_up"><a href="javascript:;" onclick="up()"><i class="arrow_icon">&#xea32;</i></a></li>

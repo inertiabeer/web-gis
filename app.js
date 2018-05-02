@@ -20,7 +20,7 @@ var server = require('http').createServer(app);
 var config = {
 	host: '47.94.226.150',
 	user: 'postgres',
-	password: '你的密码',
+	password: '986619667',
 	database: 'gis',
 }; //连接池的配置
 var pool = new Pool(config) //新建一个连接池
@@ -57,8 +57,7 @@ app.get('/', function(req, res) {
 		if (req.session.user) {
 			var user = req.session.user;
 			var name = user.name;
-			// res.render('getgeo.jade');
-			res.sendFile(__dirname + '/views/ex1.html');
+			res.sendFile(__dirname + '/views/index.html');
 		} else {
 			res.redirect("/userlog");
 		}
@@ -182,7 +181,7 @@ app.post('/upload', function(req, res) {
 		})
 
 		if (files.img) {
-			var path = JSON.parse(JSON.stringify(files.img)).path;//在数据库中叫做imgpath
+			var path = JSON.parse(JSON.stringify(files.img)).path;
 			var uploadsql = "INSERT INTO res2_4m (imgpath,res2_4m_,name,geom) VALUES ('"+path+"'," + (pointsnum + 1) + ",'" + fields.name + "'," + "st_GeomFromGeoJSON('" + fields.point + "')" + ")";
 			console.log(uploadsql);
 			pool.query(uploadsql, function(err, result) {

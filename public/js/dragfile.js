@@ -2,7 +2,7 @@ var mapbox=document.getElementById('map');
 mapbox.ondragenter = ignoreDrag;
 mapbox.ondragover = ignoreDrag;
 mapbox.ondrop = drop;
- function ignoreDrag(e) {
+function ignoreDrag(e) {
 
       e.stopPropagation();
       e.preventDefault();
@@ -15,6 +15,7 @@ function drop(e)
 	var files=data.files;
 	handle(files);
 }
+
 function handle(files)
 {
 	console.log(files);

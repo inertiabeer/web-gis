@@ -5,8 +5,6 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var fs = require('fs');
-var pg = require('pg');
-var Pool = require('pg').Pool;
 var session = require('express-session');
 var formidable = require('formidable');
 
@@ -17,6 +15,8 @@ var app = express();
 var moment = require('moment');
 
 var server = require('http').createServer(app);
+var pg = require('pg');
+var Pool = require('pg').Pool;
 var config = {
 	host: '47.94.226.150',
 	user: 'postgres',
@@ -24,7 +24,12 @@ var config = {
 	database: 'gis',
 }; //连接池的配置
 var pool = new Pool(config) //新建一个连接池
+const MongoClient = require('mongodb').MongoClient;
+const url = 'mongodb://localhost:27017';
+const dbName = 'local';
+MongoClient.connect(url, function (err, client) {
 
+});
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
@@ -46,157 +51,116 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'img')));
 var pointsnum;
 var postcode_arr
-app.get('/', function(req, res) {
+app.get('/', function (req, res) {
 
-	pool.query('SELECT *,(ST_AsGeoJSON(geom)) FROM res2_4m', function(err, result) {
-		if (err) {
-			console.log(err);
-		}
+	if (req.session.user) {
+		var user = req.session.user;
+		var name = user.name;
+		res.sendFile(__dirname + '/views/index.html');
+	} else {
+		res.redirect("/userlog");
+	}
 
-		pointsnum = result.rows[result.rows.length - 1].res2_4m_; //这里使得结果的id比前一个加上1
-		if (req.session.user) {
-			var user = req.session.user;
-			var name = user.name;
-			res.sendFile(__dirname + '/views/index.html');
-		} else {
-			res.redirect("/userlog");
-		}
-
-
-
-	});
 });
 
-app.get('/userlog', function(req, res) {
+app.get('/userlog', function (req, res) {
 	res.sendFile(__dirname + '/views/login.html');
 
 })
-app.use('/users', users);
-app.post('/geojson', function(req, res) {
-	let pointarr = [];
-	postcode_arr=[0,0,0,0,0,0,0,0,0,0];
-	pool.query('SELECT *,(ST_AsGeoJSON(geom)) FROM res2_4m', function(err, result) {
-		if (err) {
-			console.log(err);
-		}
-
-		result.rows.forEach(function(item, index) {//数据库中叫做imgpath
-
-			let point = {
-				id: item.res2_4m_,
-				name: item.name,
-				imgpath:item.imgpath,
-				geometry: JSON.parse(item.st_asgeojson)
-
-			}
-			pointarr.push(point);
-			if(item.adcode93)
-			{
-				
-				switch(parseInt(item.adcode99.toString().substr(0,1)))
-				{
-					case 0:
-					postcode_arr[0]++;
-					break;
-			        case 1:
-					postcode_arr[1]++;
-					break;
-			        case 2:
-					postcode_arr[2]++;
-					break;
-					case 3:
-					postcode_arr[3]++;
-					break;
-					case 4:
-					postcode_arr[4]++;
-					break;
-					case 5:
-					postcode_arr[5]++;
-					break;
-					case 6:
-					postcode_arr[6]++;
-					break;
-					case 7:
-					postcode_arr[7]++;
-					break;
-					case 8:
-					postcode_arr[8]++;
-					break;
-					case 9:
-					postcode_arr[9]++;
-					break;
-
-
-				}
-			}
-
-
-		})
-		
-		res.send(JSON.stringify(pointarr));
+app.post("/country", function (req, res) {
+	MongoClient.connect(url, function (err, client) {
+		var db = client.db(dbName);
+		var collection = db.collection('country');
+		collection.find({}).toArray(function (err, result) {
+			res.send(JSON.stringify(result));
+		});
 	});
+})
+app.post('/geojson', function (req, res) {
+	var pointarr = [];
+	postcode_arr = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+	MongoClient.connect(url, function (err, client) {
+		var db = client.db(dbName);
+		var collection = db.collection('point');
+		//其实是调用find方法
+		//还可以调用find({'a':3}) 找到a=3的记录
+		collection.find({}).toArray(function (err, result) {
+
+			if (err) {
+				console.log(err);
+			}
+			res.send(JSON.stringify(result));
+
+		});
+	});
+
+
 });
-app.post('/query', function(req, res) {
-	console.log(req.body.queryPoint);
+app.post('/query', function (req, res) {
 	var point = req.body.queryPoint;
 	var addsql = "INSERT INTO user_" + req.session.user.username + "(action,time) VALUES('queryed " + point + "','" + moment().format('YYYY-MM-DD HH:mm:ss') + "')";
-	pool.query(addsql, function(err, result) {
+	pool.query(addsql, function (err, result) {
 		if (err)
 			console.log(err);
-	})
+	});
+	MongoClient.connect(url, function (err, client) {
+		var db = client.db(dbName);
+		var collection = db.collection('point');
+		//其实是调用find方法
+		//还可以调用find({'a':3}) 找到a=3的记录
+		collection.findOne({
+			name: point
+		}, function (err, result) {
 
+			if (err) {
+				console.log(err);
+				res.send('error');
+			} else if (result == {}) {
+				res.send('n');
+			} else {
+				console.log(result);
+				var data = {
+					imgpath: result.imgpath,
+					point: result.geometry
+				}
 
-	console.log(point);
-	var querysql = "SELECT *,(ST_AsGeoJSON(geom)) from res2_4m where name='" + point + "'";
-	pool.query(querysql, function(err, result) {
-		if (err) {
-			console.log(err);
-			res.send('error');
-		} else if (result.rows[0] == undefined) {
-			res.send('n');
-		} else {
-			var data={
-				imgpath:result.rows[0].imgpath,
-				point:JSON.parse(result.rows[0].st_asgeojson)
-			}
-			
-			res.send(JSON.stringify(data));
-		}
+				res.send(JSON.stringify(data));
+			};
 
+		});
+	});
 
-
-	})
 });
-app.post('/upload', function(req, res) {
+app.post('/upload', function (req, res) {
 	var form = new formidable.IncomingForm();
 	form.encoding = 'utf-8';
 	form.uploadDir = "./img";
 	form.keepExtensions = true;
-	form.parse(req, function(err, fields, files) {
+	form.parse(req, function (err, fields, files) {
 		var point = JSON.parse(fields.point);
 		var addsql = "INSERT INTO user_" + req.session.user.username + "(action,time) VALUES('uploaded " + fields.name + "','" + moment().format('YYYY-MM-DD HH:mm:ss') + "')";
-		pool.query(addsql, function(err, result) {
+		pool.query(addsql, function (err, result) {
 			if (err)
 				console.log(err);
 		})
 
 		if (files.img) {
 			var path = JSON.parse(JSON.stringify(files.img)).path;
-			var uploadsql = "INSERT INTO res2_4m (imgpath,res2_4m_,name,geom) VALUES ('"+path+"'," + (pointsnum + 1) + ",'" + fields.name + "'," + "st_GeomFromGeoJSON('" + fields.point + "')" + ")";
+			var uploadsql = "INSERT INTO res2_4m (imgpath,res2_4m_,name,geom) VALUES ('" + path + "'," + (pointsnum + 1) + ",'" + fields.name + "'," + "st_GeomFromGeoJSON('" + fields.point + "')" + ")";
 			console.log(uploadsql);
-			pool.query(uploadsql, function(err, result) {
-			if (err) {
-				console.log(err);
-			}
-			var img={
-				id:(pointsnum + 1),
-				img:path
-			}
-			res.send(JSON.stringify(img));
+			pool.query(uploadsql, function (err, result) {
+				if (err) {
+					console.log(err);
+				}
+				var img = {
+					id: (pointsnum + 1),
+					img: path
+				}
+				res.send(JSON.stringify(img));
 
 
 
-		})
+			})
 
 
 		} else {
@@ -204,21 +168,17 @@ app.post('/upload', function(req, res) {
 			console.log(uploadsql);
 
 
-		
-		pool.query(uploadsql, function(err, result) {
-			if (err) {
-				console.log(err);
-			}
-			res.send(JSON.stringify(pointsnum+1));
+
+			pool.query(uploadsql, function (err, result) {
+				if (err) {
+					console.log(err);
+				}
+				res.send(JSON.stringify(pointsnum + 1));
 
 
 
-		})
-	    } 
-
-
-
-
+			})
+		}
 
 
 	})
@@ -227,87 +187,62 @@ app.post('/upload', function(req, res) {
 
 
 });
-app.post('/displayname', function(req, res) {
+app.post('/displayname', function (req, res) {
 	console.log(req.session.user);
 	res.send(req.session.user.username);
 });
-app.post('/useraction', function(req, res) {
+app.post('/useraction', function (req, res) {
 	let sql = "SELECT * FROM  user_" + req.session.user.username;
-	pool.query(sql, function(err, result) {
+	pool.query(sql, function (err, result) {
 		if (err) {
 			console.log(err);
 		}
 		console.log(result);
 		var actions = [];
-		result.rows.forEach(function(item, index) {
+		result.rows.forEach(function (item, index) {
 			actions.push(item);
 		})
 		console.log(actions);
 		res.send(JSON.stringify(actions));
 	})
 })
-app.post('/delete', function(req, res) {
-		console.log(req.body);
-		var addsql = "INSERT INTO user_" + req.session.user.username + "(action,time) VALUES('deleted" + req.body.deletePoint + "','" + moment().format('YYYY-MM-DD HH:mm:ss') + "')";
-		pool.query(addsql, function(err, result) {
-			if (err)
-				console.log(err);
-		})
-		var point_id;
-		new Promise(get_ID).then(function(id) {
-			var deletesql = "DELETE FROM res2_4m WHERE name = '" + req.body.deletePoint + "'";
-			console.log(deletesql); //这里使用了一个promise
-			pool.query(deletesql, function(err, result) {
-				if (err) {
-					console.log(err);
-
-
-				}
-				console.log(id);
-				console.log(point_id);
-				res.send(JSON.stringify(id));
-			})
-
-		}, function(err) {
-			res.send(err);
-		})
-
-		function get_ID(resolve, reject) {
-			var querysql = "SELECT res2_4m_,(ST_AsGeoJSON(geom)) from res2_4m where name='" + req.body.deletePoint + "'";
-			pool.query(querysql, function(err, result) {
-				if (err) {
-					console.log(err);
-					reject(err);
-				} else {
-					console.log(result.rows[0]);
-					if (result.rows[0] == undefined) {
-						reject('n');
-					} else {
-						point_id = result.rows[0].res2_4m_;
-						resolve(point_id);
-					}
-
-				}
-
-
-			})
-		};
-
+app.post('/delete', function (req, res) {
+	console.log(req.body);
+	var addsql = "INSERT INTO user_" + req.session.user.username + "(action,time) VALUES('deleted" + req.body.deletePoint + "','" + moment().format('YYYY-MM-DD HH:mm:ss') + "')";
+	pool.query(addsql, function (err, result) {
+		if (err)
+			console.log(err);
 	})
+	var point_id;
+	MongoClient.connect(url, function (err, client) {
+		var db = client.db(dbName);
+		var collection = db.collection('point');
+		collection.deleteOne({
+			name: req.body.deletePoint
+		}, function (err, result) {
+			if (err) {
+				console.log(err);
+			} else {
+				res.send(JSON.stringify(result.id));
+			}
+		})
+	});
 
-app.post('/login', function(req, res) {
+
+
+})
+
+app.post('/login', function (req, res) {
 	console.log(req.body);
 	var sql = "SELECT userpassword FROM public.user WHERE username='" + req.body.username + "'";
 	console.log(sql);
-	pool.query(sql, function(err, result) {
+	pool.query(sql, function (err, result) {
 		if (err) {
 			console.log(err);
 		}
-		if(result.rows[0]===undefined)
-		{
+		if (result.rows[0] === undefined) {
 			res.send('不存在此用户名')
-		}
-		else if(result.rows[0].userpassword == req.body.password) {
+		} else if (result.rows[0].userpassword == req.body.password) {
 			var user = {
 				username: req.body.username,
 				password: req.body.password
@@ -325,13 +260,8 @@ app.post('/login', function(req, res) {
 	})
 
 });
-app.get('/jsonp',function(req,res){
-	var callback=req.query.callback;
-	var data='"我只是一个路人"';
-	res.send(callback+'('+data+')')
-})
-app.post('/logout', function(req, res) {
-	req.session.destroy(function(err) {
+app.post('/logout', function (req, res) {
+	req.session.destroy(function (err) {
 		if (err) {
 			console.log(err);
 		}
@@ -341,13 +271,13 @@ app.post('/logout', function(req, res) {
 	console.log(2);
 	res.send('y');
 })
-app.post('/logup', function(req, res) {
+app.post('/logup', function (req, res) {
 	console.log(req.body);
 	var sql = "INSERT INTO public.user (username,userpassword) VALUES ('" + req.body.username + "', '" + req.body.password + "')";
 	console.log(sql);
 	var user_table = "CREATE TABLE user_" + req.body.username + "(action VARCHAR, time VARCHAR)";
 	console.log(user_table);
-	pool.query(user_table, function(err, result) {
+	pool.query(user_table, function (err, result) {
 		if (err) {
 			console.log(err);
 		}
@@ -356,7 +286,7 @@ app.post('/logup', function(req, res) {
 	});
 
 
-	pool.query(sql, function(err, result) {
+	pool.query(sql, function (err, result) {
 		if (err) {
 			console.log(err);
 			res.send('error');
@@ -367,20 +297,20 @@ app.post('/logup', function(req, res) {
 		}
 	})
 });
-app.post('/echart',function(req,res){
- res.send(JSON.stringify(postcode_arr));
+app.post('/echart', function (req, res) {
+	res.send(JSON.stringify(postcode_arr));
 })
 
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
 	var err = new Error('Not Found');
 	err.status = 404;
 	next(err);
 });
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
 	// set locals, only providing error in development
 	res.locals.message = err.message;
 	res.locals.error = req.app.get('env') === 'development' ? err : {};
@@ -390,4 +320,11 @@ app.use(function(err, req, res, next) {
 	res.render('error');
 });
 
-server.listen(4000);
+server.listen(4000, function (err) {
+	if (err) {
+		console.log(err);
+	} else {
+		console.log("成功启动");
+	}
+
+});

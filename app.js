@@ -7,10 +7,8 @@ var bodyParser = require('body-parser');
 var fs = require('fs');
 var session = require('express-session');
 var formidable = require('formidable');
-
 var index = require('./routes/index');
 var users = require('./routes/users');
-
 var app = express();
 var moment = require('moment');
 
@@ -89,6 +87,7 @@ app.post('/geojson', function (req, res) {
 			if (err) {
 				console.log(err);
 			}
+			pointsnum = result[result.length - 1].id;
 			res.send(JSON.stringify(result));
 
 		});
@@ -106,8 +105,6 @@ app.post('/query', function (req, res) {
 	MongoClient.connect(url, function (err, client) {
 		var db = client.db(dbName);
 		var collection = db.collection('point');
-		//其实是调用find方法
-		//还可以调用find({'a':3}) 找到a=3的记录
 		collection.findOne({
 			name: point
 		}, function (err, result) {
@@ -134,7 +131,7 @@ app.post('/query', function (req, res) {
 app.post('/upload', function (req, res) {
 	var form = new formidable.IncomingForm();
 	form.encoding = 'utf-8';
-	form.uploadDir = "./img";
+	form.uploadDir = __dirname + "/img";
 	form.keepExtensions = true;
 	form.parse(req, function (err, fields, files) {
 		var point = JSON.parse(fields.point);
@@ -143,42 +140,37 @@ app.post('/upload', function (req, res) {
 			if (err)
 				console.log(err);
 		})
-
+		let temp_point;
+		let response;
 		if (files.img) {
-			var path = JSON.parse(JSON.stringify(files.img)).path;
-			var uploadsql = "INSERT INTO res2_4m (imgpath,res2_4m_,name,geom) VALUES ('" + path + "'," + (pointsnum + 1) + ",'" + fields.name + "'," + "st_GeomFromGeoJSON('" + fields.point + "')" + ")";
-			console.log(uploadsql);
-			pool.query(uploadsql, function (err, result) {
-				if (err) {
-					console.log(err);
-				}
-				var img = {
-					id: (pointsnum + 1),
-					img: path
-				}
-				res.send(JSON.stringify(img));
-
-
-
-			})
-
+			var path = JSON.parse(JSON.stringify(files.img)).path.replace(__dirname,'');
+			console.log(path);
+			temp_point = {
+				imgpath: path,
+				id: (pointsnum + 1),
+				name: fields.name,
+				geometry: fields.point
+			}
+			response = {
+				id: (pointsnum + 1),
+				img: path
+			}
 
 		} else {
-			var uploadsql = "INSERT INTO res2_4m (res2_4m_,name,geom) VALUES (" + (pointsnum + 1) + ",'" + fields.name + "'," + "st_GeomFromGeoJSON('" + fields.point + "')" + ")";
-			console.log(uploadsql);
-
-
-
-			pool.query(uploadsql, function (err, result) {
-				if (err) {
-					console.log(err);
-				}
-				res.send(JSON.stringify(pointsnum + 1));
-
-
-
-			})
+			response = pointsnum + 1;
+			temp_point = {
+				id: (pointsnum + 1),
+				name: fields.name,
+				geometry: fields.point
+			}
 		}
+		MongoClient.connect(url, function (err, client) {
+			var db = client.db(dbName);
+			var collection = db.collection('point');
+			collection.insertOne(temp_point, function (err, result) {
+				res.send(JSON.stringify(response));
+			});
+		});
 
 
 	})

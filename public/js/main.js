@@ -162,7 +162,8 @@
                 geometry: new ol.geom.Point(moka),
                 name: name
               })
-              var hdms = ol.coordinate.toStringHDMS(moka); //这里是对经纬度进行转换
+              console.log(moka);
+              var hdms = moka; //这里是对经纬度进行转换
 
               if (id.img) //这里进行判断如果有img属性就是可以加图片
               {
@@ -171,7 +172,7 @@
 
 
                 var path = id.img;
-                path = path.split('/')[1];
+                path = path.split('/img/')[1];
                 console.log(path);
                 feature.path = path;
                 content.innerHTML = '<div class="img" style="background-color: white"><p>You uploaded here:</p><code>' + hdms +
